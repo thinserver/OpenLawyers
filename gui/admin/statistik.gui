@@ -1,0 +1,67 @@
+<html>
+<head><title>Statistik</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+</head>
+<body>
+<table class="mainframe" cellspacing=0 width="100%" height="100%">
+<tr><td align="center" valign="middle">
+
+	<table class="dialog" width="500px">
+		<tr><td  colspan="2" class="hauptpunkt">Allgemeine Informationen</td></tr>
+		<tr><td>Anzahl der registrierten Akten:</td><td>_akten_</td></tr>
+		<tr><td>Gespeicherte Dokumente:</td><td>_doks_</td></tr>
+		<tr><td>Gesamter Honorarumsatz:</td><td>_umsatz_</td></tr>
+		<tr><td>Durchschnitt Honorarumsatz/Akte:</td><td>_durchschnitt_</td></tr>
+		
+		<tr><td colspan="2" class="hauptpunkt">Verhältnis erledigter zu unerledigter Akten</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_erledigt_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+		
+		<tr><td colspan="2" class="hauptpunkt">Fachgebiete im Verhältnis</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_fachgebiete_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+
+		<tr><td colspan="2" class="hauptpunkt">Umsatz je Fachgebiet</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_umsatzfachgebiete_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+		
+		<tr><td colspan="2" class="hauptpunkt">Umsatz je Fachgebiet/Akte<br>(nur erledigte oder Akten mit Rechnungsbetrag)</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_umsatzakte_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+
+		<tr><td colspan="2" class="hauptpunkt">Akten je Bearbeiter</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_aktenbearbeiter_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+		
+		<tr><td colspan="2" class="hauptpunkt">Erledigungsquote je Bearbeiter (gesamt/erledigt)<br>(absolut gibt prozentuale Erledigung je Bearbeiter an)</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_aktenbearbeitererledigt_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+
+		<tr><td colspan="2" class="hauptpunkt">Umsatz je Bearbeiter</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_umsatzbearbeiter_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+
+		<tr><td colspan="2" class="hauptpunkt">Arbeitsaufwand je Bearbeiter</td></tr>
+		<tr><td colspan="2" valign="middle" align="center"><object data="_arbeitbearbeiter_" type="image/svg+xml" width="400px" height="200px"></td></tr>
+
+	
+	</table>
+
+
+</td></tr></table>
+
+<!-- Eine Error-MSG Box -->
+
+<span id="error" style="width:100%;height:100%;position:absolute;top:0px;left:0px;display:_display_;cursor:wait;">
+<span style="position:absolute;top:50%;left:50%;cursor:default;">
+	<div style="position:absolute;top:-60px;left:-135px;width:300px;height:150px;">
+		<img style="filter:Alpha(opacity=40);-moz-opacity:0.4;opacity:0.4;" src="/skin/shadow.gif">
+	</div>
+	<div class="errorheadline" style="position:absolute;top:-75px;left:-150px;width:300px;height:20px;">
+		Wichtiger Hinweis !
+	</div>
+	<div class="errorbody" style="width:300px;height:100px;position:absolute;top:-55px;left:-150px;">
+		<table width="100%" height="100%"><tr><td style="width:100px;"><img src="/skin/error.gif"></td><td class="errorbody" style="border-style:none;">_error_</td></tr></table>
+	</div>
+	<div class="errorbody" style="width:300px;height:30px;position:absolute;top:45px;left:-150px;border-bottom-style:solid;">
+		<input type="submit" class="button" value="OKAY" onclick="Javascript:document.getElementById('error').style.display='none'">
+	</div>
+</span>
+</span>
+
+</body></html>

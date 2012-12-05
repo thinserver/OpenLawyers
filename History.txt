@@ -1,0 +1,101 @@
+#Version 1.0.1
+Die gute alte Notation der Versionsentwicklung. Dieser Release ist ein BugFix.
+Nach Hinweis des zweiten Nutzers auf diesem Planeten, musste ich feststellen, dass ich das
+System wohl die gesamte Zeit mit "Fehlerunterdrückung" [display-errors off] entwickelt habe. Hupps.
+Naja, viel gab's denn aber doch nicht, die Sachen, die ich gefunden habe, waren Kleinkram, der
+keinen Einfluss auf die Funktion mit eingeschalteter Fehlerunterdrückung hatte und hat.
+- Änderungen Showgui, POSTErhalten, Postbuch
+
+#Juni 2011 - Planungen für Version 1.1
+Datenbankpool (mehrere Datenbanken verwalten)
+Formatvorlagen mit Autoausfüllung
+Admin-Panel überarbeiten
+
+#Juni 2011 - Release OpenLawyer's 1.0
+
+Es hat sich eine Menge getan, viel Kosmetik, neue Funktionen, Bugfixes (Nur im täglich genutzten User-Bereich !)
+Ein Liste der Änderungen ohne Anspruch auf Vollständigkeit:
+
+Neue Funktionen:
+1. Postbuch - Übersicht über Posteingänge, Postausgänge über Zeitraum und Adressat etc.
+2. Kurzvermerk - Unmittelbar zur Akte kann ein Kurzvermerk geschrieben und gespeichert werden ohne externe Programme (z.B. für Gesprächsvermerke)
+3. Protokollfunktion - wesentliche Aktenvorgänge werden in einem Protokoll zur Aktenvita gespeichert. Tabellarische Übersicht Aktenvita.
+
+Änderungen & BugFixes
+
+/// Datenbankinitialisierung unmittelbar aus olclient; init.php entfällt
+
+/// unnötige Fehleingaben bei Tabellenauswahl etc. vermeiden, Button deaktiviert
+(+) Buttons deaktiviert, wenn Tabellenliste ohne Fokus
+
+/// Postbuch
+(+) posterhalten auch für Radiobuttons
+(+) Postbuch bei geschlossenen Akten im Menü
+
+/// Dateiberechtigungen
+(+) olclient.php
+
+/// Tabellen - Sortierfunktionen 
+(+) sämtliche Tabellen sortierbar machen
+(+) Änderungen der GUIs wegen <input> Feldern !
+
+/// Schönheitsop's
+(+) Zeitdarstellung Statusleiste
+(+) date("d.m.Y") - als Standard eintragen
+(+) Focus auf erstes Eingabefeld einer Maske beim Funktionsaufruf
+(+) POST Codes nach Aufruf erhalten
+(+) Zeichenkodierung festlegen in GUIs
+(+) fehlerhafte Umlautdarstellungen
+(+) Suchbegrenzungen - 10 Einträge - aufheben
+(+) index.htm aufgeben für Vollbilddarstellungen
+(+) Loginmaske pimpen
+(+) Adressendarstellungen / Handaktenbogen
+
+/// Geschlossene Akten
+(+) In Zukunft gibt es das gleiche Menü, jedoch werden Funktionen deaktiviert, die Änderungen an der Akte bewirken
+Somit kann auch bei geschlossenen Akten z.B. Aktenvita eingesehen werden, ohne wie bisher die Akte reaktivieren zu müssen.
+
+/// Akte öffnen
+(+) Suche über "wegen" statt Sonstiges
+(+) Kumulierte suche über alle Felder
+(+) Name / Vorname
+(+) Sortierreihenfolge - Anlagedatum
+(+) Sortierbarkeit, Darstellung ändern
+(+) nach Beteiligten suchen
+
+/// Doksuche
+(+) Darstellung erweitert um KRubrum und Ersteller, Reihenfolge geändert
+
+/// Wiedervorlagenliste
+(+) Darstellung des KRubrum
+(+) Sortierbare Spalten
+
+/// Adressbuch
+(+) Suche: Telefon1 / Telefon2 gleichwertig
+(+) Telefonnummernotation für Suche irrelevant
+(+) ReDesign
+(+) Bei Auswahl für Aktualisierung Felder vorbelegen
+
+/// Statistik
+(+) SVG Darstellung <object>-Tag
+
+Keine Änderungen gesamtes ADMIN-Panel
+
+#18.01.2009 BUGFIXES
+
+Da die Software auf einem Windows-System ent- und im laufenden Betrieb, also am offenen Herzen, weiterentwickelt wurde, habe ich bis dato eine Installation auf einem Linux System nicht getestet. 
+
+1. Bei der Installation auf einen Linux-System (Xubuntu 8.10 mit PHP5-fastcgi, Lighttpd) ergaben sich ein paar Probleme, insbesondere mit der Rechteverwaltung.
+
+Die Rechte bei der Verzeichnisanlage wurden von 0600 auf 0774 verändert, scheint der einzige Modus zu sein, bei dem es funktioniert.
+
+2. Darüber hinaus gab es 2 - unerklärliche - Schreibfehler in der init.php, die eine Installation unmöglich machten (akten.opl, vergessene Klammer) : gefixt.
+
+3. ACHTUNG beim Einsatz von Lighttpd: die Berechtigung der Benutzer wird u.a. anhand einer IP-Adresse bestimmt. Lighttpd liefert bei aktivierter IPv6-Unterstützung über getenv("REMOTE_ADDR") (PHP) eine konvertierte IP-Adresse im Stile ::ffff:127.0.0.1, was bei der Verwendung von ip2long (PHP) Probleme macht; zeigt sich durch einen 404-Fehler beim Aufruf von olclient.php.
+
+FIX z.zt: In der Lighttpd-conf die IPv6-Unterstützung deaktivieren.
+
+4. NOT-Fixed: Statistik-Modul: seit Firefox 3 scheint die Einbindung von SVG-Grafiken nicht mehr wie bei Firefox 2 zu funktionieren.
+
+#Erstrelease OL
+

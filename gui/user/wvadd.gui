@@ -1,0 +1,113 @@
+<html>
+<head><title>Wiedervorlagen eintragen</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+<script language="Javascript">
+
+var week = 604800000;
+
+function init()
+{
+	initlist();
+	nextDate(1);
+	document.which.tag.focus();
+}
+
+function nextDate(t)
+{
+	var Datum = new Date();
+	var newDatum = new Date((Datum.getTime()+(t*week)));
+	document.which.tag.value=newDatum.getDate();
+	document.which.monat.value=newDatum.getMonth()+1;
+	document.which.jahr.value=newDatum.getFullYear();
+}
+
+</script>
+</head>
+<body onload="init()">
+<table class="mainframe" cellspacing=0 width="100%" height="100%">
+<tr><td align="center" valign="middle">
+
+<form name="which" action="olclient.php" method="POST">
+<table class="dialog">
+
+<tr><td colspan="7" class="hauptpunkt">Wiedervorlage anlegen</td></tr>
+<tr><td colspan="3">Datum (tt.mm.jjjj)</td>
+	<td valign="bottom">Für Bearbeiter</td>
+	<td valign="bottom">Wegen*</td>
+	<td valign="bottom">WV-Typ</td></tr>
+
+<tr><td><input type="text" style="text-align:right;" class="textfield" size="2" maxlength="2" tabindex="1" name="tag"></td>
+	<td><input type="text" style="text-align:right;" class="textfield" size="2" maxlength="2" tabindex="2" name="monat"></td>
+	<td><input type="text" style="text-align:right;" class="textfield" size="4" maxlength="4" tabindex="3" name="jahr"></td>
+	<td><select class="dropdown" style="width:100%;" tabindex="5" name="bearbeiter" size="1">
+		<option _selected_ value="_id_">_user_</option>
+		</select></td>
+	<td><input type="text" class="textfield" size="20" maxlength="50" tabindex="6" name="wegen"></td>
+	<td><select class="dropdown" tabindex="7" name="wvtyp" size="1">
+		<option value="_wvid_">_wvtyp_</option>
+		</select></td>
+		<td><input _ButtonDisabled_ type="submit" style="width:9em;" class="button" tabindex="8" name="add" value="Hinzufügen"></td></tr>
+
+<tr><td colspan="3"><select tabindex="4" class="dropdown" size="1">
+		<option onclick="nextDate(1)">in 1 Woche</option>
+		<option onclick="nextDate(2)">in 2 Wochen</option>
+		<option onclick="nextDate(4)">in 4 Wochen</option>
+		<option onclick="nextDate(6)">in 6 Wochen</option>
+		<option onclick="nextDate(12)">in 12 Wochen</option>
+		</select></td></tr>
+
+<tr><td colspan="7" class="hauptpunkt">Aktive Wiedervorlagen für diese Akte</td></tr>
+<tr><td colspan="6" valign="top">
+
+		<table width="100%" class="tablelist" cellspacing=0 cellpadding=2>
+			<tr class="tablelistheader"><td>Datum</td><td>Bearbeiter</td><td>Grund</td><td>Typ</td></tr>
+
+				<tr style="color:#6D0005;" class="tablelist" id="_nr_" onclick="colorize(_nr_,'_ButtonDisabled_','done')"><td nowrap>_datum_</td><td nowrap>_bearbeiter_</td><td>_grund_</td><td>_typ_</td></tr>
+
+				<input type="hidden" name="zeile" value="">
+		
+		</table>
+	
+	</td>
+	<td align="right" valign="top"><input disabled style="width:9em;" type="submit" class="button" tabindex="9" name="done" value="Erledigt"></td></tr>
+	<input type="hidden" name="function" value="12">
+	</form>
+
+<tr><td colspan="7"></td></tr>
+<tr><td colspan="7" class="hauptpunkt">Bereits erledigte Wiedervorlagen für diese Akte</td></tr>
+<tr><td colspan="7" valign="top">
+
+		<table width="100%" class="tablelist" cellspacing=0 cellpadding=2>
+			<tr class="tablelistheader"><td>Datum</td><td>Bearbeiter</td><td>Grund</td><td>Typ</td></tr>
+
+				<tr style="color:#AAAAAA;" class="tablelist"><td nowrap>_datum1_</td><td nowrap>_bearbeiter1_</td><td>_grund1_</td><td>_typ1_</td></tr>
+		</table>
+	
+	</td></tr>
+
+</table>
+</td></tr></table>
+
+<!-- Eine Error-MSG Box -->
+
+<span id="error" style="width:100%;height:100%;position:absolute;top:0px;left:0px;display:_display_;cursor:wait;">
+<span style="position:absolute;top:50%;left:50%;cursor:default;">
+	<div style="position:absolute;top:-60px;left:-135px;width:300px;height:150px;">
+		<img style="filter:Alpha(opacity=40);-moz-opacity:0.4;opacity:0.4;" src="/skin/shadow.gif">
+	</div>
+	<div class="errorheadline" style="position:absolute;top:-75px;left:-150px;width:300px;height:20px;">
+		Wichtiger Hinweis !
+	</div>
+	<div class="errorbody" style="width:300px;height:100px;position:absolute;top:-55px;left:-150px;">
+		<table width="100%" height="100%"><tr><td style="width:100px;"><img src="/skin/error.gif"></td><td class="errorbody" style="border-style:none;">_error_</td></tr></table>
+	</div>
+	<div class="errorbody" style="width:300px;height:30px;position:absolute;top:45px;left:-150px;border-bottom-style:solid;">
+		<input type="submit" class="button" value="OKAY" onclick="Javascript:document.getElementById('error').style.display='none';document.which.tag.focus();">
+	</div>
+</span>
+</span>
+
+</body>
+</html>

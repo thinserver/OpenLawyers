@@ -1,0 +1,372 @@
+html, body
+			{ 	position:absolute;
+				top:0px;
+				left:0px;
+				width:100%;
+				height:100%;
+				margin:0px;
+				padding:0px;
+				font-family:Verdana;
+				font-size:12px;
+				color:#FFFFFF;
+				background-color:#FFF4C3; 
+
+			}
+
+table {
+				margin:0px;
+				padding:0px;
+				font-family:Verdana;
+				font-size:12px;
+				color:#000000;
+		}
+
+/* Irgendein Element, dass mit einem Handler klickbar wird */
+
+.clickable      {
+                                cursor: pointer;
+                
+                }
+
+/* Kopfzeile */
+
+.userheading {
+				width:100%;
+				height:100%;
+				background-color:#6D0005;
+				background-image:url(/skin/logo.gif);
+				background-repeat:no-repeat;
+				background-position:10px center;
+			 }
+
+.userheading2 {
+				width:100%;
+				height:100%;
+				background-color:#6D0005;
+				background-image:url(/skin/logo.gif);
+				background-repeat:no-repeat;
+				background-position:right center;
+			 }
+			 
+.status { width:100%;
+		  height:100%;
+		  background-color:#6D0005;
+		 }
+
+
+/* Menu links */
+
+.menu {
+			background-color:#FFF4C3;
+	  }
+
+/* Jeder Dialog erscheint in einer table 100%,100% der Größe */
+
+.mainframe { 
+			width:100%;
+			height:100%;
+			background-color:#FFF4C3;
+			background-image:url(/skin/mainbg.gif);
+			background-repeat:no-repeat;
+			background-position:center center;
+			background-attachment:fixed;
+			font-family:Verdana;
+			font-size:12px;
+			
+		   }
+
+/* der Login-Dialog */
+
+.login { 	
+			width:100%;
+			height:100%;
+			position:absolute;
+			top:0px;
+			left:0px;
+			background-color:#FFF4C3;
+			margin:0px;
+			padding:0px;
+			border-style:none;
+		}
+
+/* Überschriften in den Dialogen */
+
+.hauptpunkt { 
+				background-color:#6D0005;
+				font-weight:bold;
+				color:#ffffff; 
+				border-style:solid;
+				border-color:#ffffff;
+				border-width:1px;
+			}
+
+/* Eingabezeilen von Typ <input type="text"> */
+
+.textfield { 
+				font-weight:bold;
+				font-family:Verdana;
+				font-size:12px;
+				background-color:transparent;
+				color:#000000;
+				border-style:solid;
+				border-width:1px;
+				border-color:#000000; 
+			}
+			
+input.textfield:focus {
+						background-color:#FFDA35;
+					  }
+
+textarea.textfield:focus {
+						background-color:#FFDA35;
+					  }
+
+/* Ist die Haupttable, die die Dialogelemente enthält */
+
+.dialog { 	
+			border-color:#000000;
+			border-style:solid;
+			border-width:1px;
+			
+			font-family:Verdana;
+			font-size:12px;
+			color:#000000; 
+		}
+
+/* <input type="submit"> Buttons */
+
+.button {  
+			font-family:Verdana;
+			font-size:12px;
+			color:#000000;
+			border-style:solid;
+			border-color:#000000;
+			border-width:1px;
+			background-color:#DCDCDC;
+			padding-top:1px;
+			padding-bottom:1px;
+			
+			cursor:pointer;
+
+		}
+		
+input.button:hover {
+					color:#ffffff;
+					background-color:#000000; 
+				}
+				
+input.button:focus {				
+					 color:#ffffff;
+					 background-color:#000000; 
+				    }
+
+.button[disabled] {  
+			font-family:Verdana;
+			font-size:12px;
+
+			color:#C8C8C8;
+			border-style:solid;
+			border-color:#000000;
+			border-width:1px;
+			background-color:#DCDCDC;
+			padding-top:1px;
+			padding-bottom:1px;
+			
+			cursor:default;
+
+		}
+		
+input.button[disabled]:hover {	color:#C8C8C8; background-color:#DCDCDC;  }
+				
+input.button[disabled]:focus {	color:#C8C8C8; background-color:#DCDCDC;  }
+
+/* Menüleiste */
+
+a { 
+	color:#000000;
+	text-decoration:none;
+  }
+  
+a[href^='mailto:']
+{
+        color:#6D0005;
+}
+
+.paneldialog { 
+				width:100%;
+				height:100%;
+				text-align:center;
+
+			  } 
+
+.panellink	 { 
+				width:90%;
+				padding-top:1px;
+				padding-bottom:1px;
+				margin-top:2px;
+				margin-bottom:2px;
+				text-align:center;
+				border-style:solid;
+				border-width:1px;
+				border-color:#000000;
+				background-color:#DCDCDC;
+				
+				font-family:Verdana;
+				font-size:12px;
+				color:#000000;
+				text-decoration:none;
+				cursor:pointer;
+			}
+
+
+div.panellink:hover {
+						color:#ffffff;
+						text-decoration:none;
+						background-color:#000000; 
+					}
+
+ 
+/* Normale Select-Liste ohne Dropdown */
+
+.list { 
+		font-weight:bold;
+		font-family:Verdana;
+		font-size:12px;
+		background-color:transparent;
+		color:#000000;
+		border-style:solid;
+		border-width:1px;
+		border-color:#000000; 
+	  }
+
+/* Eine Liste, die aus Tabellen-Zeilen besteht */
+
+table.tablelist { 
+					width:100%;
+					font-family:Verdana;
+					font-size:12px;
+					color:#000000;
+					border-width:1px;
+					border-style:solid;
+					border-color:#000000;
+					margin:0px;
+					padding:0px; 
+					cursor:pointer;
+					
+				}
+
+
+table.tablelist td { 
+					 border-top-style:solid;
+					 border-top-color:#000000;
+					 border-top-width:1px;
+					 vertical-align:top;
+					 
+					}
+	
+tr.tablelistheader { 
+						font-weight:bold;
+						cursor:default;
+					}
+
+
+tr.tablelistheader td { 
+						font-weight:bold;
+						border-style:none;
+						white-space:nowrap;
+				    	}
+				    	
+/* Ein <input type="file" */
+
+.fileselect { 
+				font-weight:bold;
+				font-family:Verdana;
+				font-size:12px;
+				background-color:transparent;
+				color:#000000;
+				border-style:solid;
+				border-width:1px;
+				border-color:#000000; 
+			}
+
+/* Dropdownliste, also <select> mit einem Eintrag */
+
+.dropdown { 
+			font-weight:bold;
+			font-family:Verdana;
+			font-size:12px;
+			background-color:#FFF4C3;
+			color:#000000;
+			border-style:solid;
+			border-width:1px;
+			border-color:#000000; 
+		  }
+
+
+/* Definitionen für die Error-MSG */
+
+.errorheadline { 	
+					text-align:center;
+					font-weight:bold;
+					font-family:Verdana;
+					font-size:12px;
+					background-color:#6D0005;
+					color:#ffffff;
+					border-style:solid;
+					border-width:1px;
+					border-color:#000000;
+				}
+				
+.errorbody	{	
+				background-color:#FFF4C3;
+				text-align:center;
+				vertical-align:middle;
+				border-left-style:solid;
+				border-right-style:solid;
+				border-width:1px;
+				border-color:#000000;
+				color:#6D0005;
+				font-family:Verdana;
+				font-size:12px;
+			}
+				
+				
+
+.hiddenfield { 	
+				font-family:Verdana;
+				font-size:10px;
+				background-color:transparent;
+				color:#FFFFFF;
+				border-style:none; 
+			 }
+			 
+@media print
+{
+	.dialog { font-family:georgia,verdana,arial;
+			  border-style:none;
+			  width:17cm;
+			  position:absolute;
+			  top:0cm;
+			  left:0cm;
+			  color:#000000;
+			  background-color:#ffffff;
+			  	}
+	.hauptpunkt { border-style:solid;
+				  border-width:1px;
+				  border-color:#000000;
+				  color:#000000;
+				  background-color:#ffffff;
+				 }
+
+	a { background-color:#ffffff; color:#ffffff; }
+
+	table.tablelist td { 	font-family:georgia,verdana,arial;
+							border-style:none; 
+						}
+						
+	.button,.list,.textfield { font-family:georgia,verdana,arial;
+							background-color:#ffffff;
+							border-color:#ffffff;
+							border-style:none;
+							}
+}

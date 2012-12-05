@@ -1,0 +1,28 @@
+<html>
+<head><title>Administratorbereich</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+</head>
+<body class="menu" onload="menuinit()">
+	<table class="paneldialog">
+	<tr><td valign="top" align="center">
+		<div style="font-size:15px;">&#160;</div>
+		<a onclick="menuclick(1)" onmouseover="menuover(1)" onmouseout="menuout(1)" href="olclient.php?function=1" target="main"><div id="1" class="panellink">Benutzer</div></a>
+		<a onclick="menuclick(2)" onmouseover="menuover(2)" onmouseout="menuout(2)" href="olclient.php?function=2" target="main"><div id="2" class="panellink">Sicherheit</div></a>
+		<a onclick="menuclick(3)" onmouseover="menuover(3)" onmouseout="menuout(3)" href="olclient.php?function=3" target="main"><div id="3" class="panellink">Logfile</div></a>
+		<a onclick="menuclick(4)" onmouseover="menuover(4)" onmouseout="menuout(4)" href="olclient.php?function=4" target="main"><div id="4" class="panellink">AZ / RNR.</div></a>
+		<a onclick="menuclick(5)" onmouseover="menuover(5)" onmouseout="menuout(5)" href="olclient.php?function=5" target="main"><div id="5" class="panellink">Formatvorlagen</div></a>
+		<a onclick="menuclick(6)" onmouseover="menuover(6)" onmouseout="menuout(6)" href="olclient.php?function=6" target="main"><div id="6" class="panellink">Rechtsgebiete</div></a>
+		<a onclick="menuclick(7)" onmouseover="menuover(7)" onmouseout="menuout(7)" href="olclient.php?function=9" target="main"><div id="7" class="panellink">Linkliste</div></a>
+		<a onclick="menuclick(8)" onmouseover="menuover(8)" onmouseout="menuout(8)" href="olclient.php?function=10" target="main"><div id="8" class="panellink">WV Typen</div></a>
+		<a onclick="menuclick(11)" onmouseover="menuover(11)" onmouseout="menuout(11)" href="olclient.php?function=11" target="main"><div id="11" class="panellink">Beteiligtenarten</div></a>
+		<a onclick="menuclick(9)" onmouseover="menuover(9)" onmouseout="menuout(9)" href="olclient.php?function=7" target="main"><div id="9" class="panellink">Statistik</div></a>
+
+	</td></tr>
+	<tr><td valign="bottom" align="center">		
+		<a onclick="menuclick(10)" onmouseover="menuover(10)" onmouseout="menuout(10)" href="olclient.php?function=8" target="_top"><div id="10" class="panellink">Abmelden</div></a>
+
+	</td></tr>
+	</table>
+</body></html>

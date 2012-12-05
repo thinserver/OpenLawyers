@@ -1,0 +1,133 @@
+<html>
+<head><title>Aktenvita</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+<script language="javascript">
+
+// ursprüngliche POSTs müssen durch clientseitige Unterstützung erhalten werden
+
+function POSTErhalten()
+{
+   // Diese Aktionen sind nur sinnvoll und erforderlich, falls tatäschlich Änderungen vorgenommen wurden,
+   // also zumindest der Aktualisieren-Button gedrückt wurde ...
+   
+   sPOSTs="_HINZUFUEGEN_";
+   if (sPOSTs=="Hinzufügen")
+   {     
+        oFormElement=document.which;
+        oFormElement.bezeichnung.value="_BEZEICHNUNG_";
+        
+        // fileselect lässt sich aus Sicherheitsgründen nicht schreiben ...
+        // oFormElement.dokument.value="_DOKUMENT_";
+        
+        for ($t=0;$t<oFormElement.bearbeiter.length;$t++)
+        {
+                if (oFormElement.bearbeiter[$t].value=="_BEARBEITER_")
+                 { oFormElement.bearbeiter[$t].selected=1; } 
+                 else { oFormElement.bearbeiter[$t].selected=0; }
+        }
+        
+  }
+}
+
+function init()
+{
+        initlist();
+        POSTErhalten();
+        document.which.bezeichnung.focus();
+}
+
+</script>
+</head>
+<body onload="init()">
+
+<form name="which" action="olclient.php" method="POST" enctype="multipart/form-data">
+
+<table class="mainframe" cellspacing=0 width="100%" height="100%">
+<tr><td align="center" valign="middle">
+
+	<table class="dialog">
+	
+	<tr><td colspan="3" class="hauptpunkt">Dokument zur Akte hinzufügen</td></tr>
+	
+	<tr><td colspan="3" align="right"><span class="clickable" onclick="resetFORM('which');document.which.bezeichnung.focus();">[x]</span></td></tr>
+
+	
+	<tr><td>Bezeichnung*</td><td><input class="textfield" type="text" tabindex="1" name="bezeichnung" style="width:100%;" maxlength="30"></td><td><input _ButtonDisabled_ class="button" type="submit" value="Hinzufügen" tabindex="4" name="hinzufuegen" style="width:100%"></td></tr>
+
+	<tr><td>Dokument auswählen*</td><td align="left"><input class="fileselect" tabindex="2" name="dokument" type="file" accept="*"></td><td></td></tr>
+
+	<tr><td>Erstellt durch</td>
+		<td><select class="dropdown" style="width:100%;" tabindex="3" name="bearbeiter" size="1">
+		
+						<option _selected_ value="_user_">_user_</option>
+		
+		</select></td><td></td><td></td></tr>
+
+	<tr><td colspan="3" class="hauptpunkt">Aktenvita</td></tr>
+	<tr><td colspan="2" valign="top">
+
+		<table class="tablelist" id="sortable" cellspacing=0 cellpadding=2>
+		
+		        <tr class="tablelistheader">
+		                <td>Datum <span class="clickable" onclick="sortTable(this,'Date')">&uarr;</span><span class="clickable" onclick="sortTable(this,'Date','DESC')">&darr;</span></td>
+		                <td>Bearbeiter <span class="clickable" onclick="sortTable(this)">&uarr;</span><span class="clickable" onclick="sortTable(this,'DESC')">&darr;</span></td>
+		                <td>Bezeichnung <span class="clickable" onclick="sortTable(this)">&uarr;</span><span class="clickable" onclick="sortTable(this,'DESC')">&darr;</span></td>
+		        </tr>
+		
+		        <tr class="tablelist" id="_nr_" onclick="colorize('_nr_','_ButtonDisabled_del','oeffnen')"><td>_datum_</td><td>_bearbeiter_</td><td>_bezeichnung_</td></tr>
+
+		</table>
+
+                <input type="hidden" name="zeile" value="">
+
+		</td><td valign="top"><input disabled type="submit" class="button" tabindex="4" name="oeffnen" style="width:100%" value="Öffnen">
+				<br><br><input disabled tabindex="5" type="button" class="button" onclick="Javascript:document.getElementById('warnung').style.display='block'" style="width:100%" value="Löschen" name="del"></td></tr>
+	</table>
+
+</td></tr></table>
+
+<!-- Eine Error-MSG Box -->
+
+<span id="error" style="width:100%;height:100%;position:absolute;top:0px;left:0px;display:_display_;cursor:wait;">
+<span style="position:absolute;top:50%;left:50%;cursor:default;">
+	<div style="position:absolute;top:-60px;left:-135px;width:300px;height:150px;">
+		<img style="filter:Alpha(opacity=40);-moz-opacity:0.4;opacity:0.4;" src="/skin/shadow.gif">
+	</div>
+	<div class="errorheadline" style="position:absolute;top:-75px;left:-150px;width:300px;height:20px;">
+		Wichtiger Hinweis !
+	</div>
+	<div class="errorbody" style="width:300px;height:100px;position:absolute;top:-55px;left:-150px;">
+		<table width="100%" height="100%"><tr><td style="width:100px;"><img src="/skin/error.gif"></td><td class="errorbody" style="border-style:none;">_error_</td></tr></table>
+	</div>
+	<div class="errorbody" style="width:300px;height:30px;position:absolute;top:45px;left:-150px;border-bottom-style:solid;">
+		<input type="button" class="button" value="OKAY" onclick="Javascript:document.getElementById('error').style.display='none';document.which.bezeichnung.focus();">
+	</div>
+</span>
+</span>
+
+<!-- Eine Warnung -->
+
+<span id="warnung" style="width:100%;height:100%;position:absolute;top:0px;left:0px;display:none;cursor:wait;">
+<span style="position:absolute;top:50%;left:50%;cursor:default;">
+	<div style="position:absolute;top:-60px;left:-135px;width:300px;height:150px;">
+		<img style="filter:Alpha(opacity=40);-moz-opacity:0.4;opacity:0.4;" src="/skin/shadow.gif">
+	</div>
+	<div class="errorheadline" style="position:absolute;top:-75px;left:-150px;width:300px;height:20px;">
+		Wichtiger Hinweis !
+	</div>
+	<div class="errorbody" style="width:300px;height:100px;position:absolute;top:-55px;left:-150px;">
+		<table width="100%" height="100%"><tr><td style="width:100px;"><img src="/skin/error.gif"></td><td class="errorbody" style="border-style:none;">Sind Sie sicher, dass Sie das gewählte Dokument löschen wollen ?</td></tr></table>
+	</div>
+	<div class="errorbody" style="width:300px;height:30px;position:absolute;top:45px;left:-150px;border-bottom-style:solid;">
+		<input type="submit" class="button" name="loeschen" value="Löschen">
+		<input type="button" class="button" value="Abbrechen" onclick="Javascript:document.getElementById('warnung').style.display='none';document.which.bezeichnung.focus();">
+		<input type="hidden" name="function" value="10">
+	</div>
+</span>
+</span>
+
+</form>
+
+</body></html>

@@ -1,0 +1,159 @@
+<html>
+<head><title>Adressbuch</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+<script language="javascript">
+
+// Überträgt den Datensatz beim Klick in die Tabelle in die Eingabemaske
+
+function adressTransfer(whichID)
+{
+        // Zugriff auf den konkreten Datensatz über ID
+
+        $fds=document.getElementById('fd'+whichID);
+        if ($fds!=null)
+        {
+        
+        for ($t=0;$t<11;$t++)
+        {
+      
+                // getElementsByTagName kann auch innerhalb eines HTML Objektes verwendet werden
+                // liefert ein Array mit den HTML Objekten des Tags
+                // DT ist Elementknoten, der Text ist ein Kindknoten
+                
+                $destName=$fds.getElementsByTagName("dt")[$t].firstChild.data;
+                
+                // die DT Elemente sind mit Text vorbelegt, aber nicht jedes DD Element muss Text
+                // enthalten, was - trotz NULL - die Fehlerkonsole bemüht
+                
+                if ($fds.getElementsByTagName("dd")[$t].childNodes.length>0)
+                {
+                        $destValue=$fds.getElementsByTagName("dd")[$t].firstChild.data;
+                } else { $destValue=""; }
+                
+                document.which.elements[$destName].value=$destValue;
+                
+        }
+        }
+
+}
+
+</script>
+</head>
+<body onload="initlist();document.which.firma.focus();">
+<table class="mainframe" cellspacing=0 width="100%" height="100%">
+<tr><td align="center" valign="middle">
+
+	<form name="which" action="olclient.php" method="POST">
+	<table class="dialog">
+	
+	<tr><td class="hauptpunkt" colspan="5">Adressdaten</td></tr>
+	
+	<tr><td colspan="5" align="right"><span class="clickable" onclick="resetFORM('which');document.which.firma.focus()">[x]</span></td></tr>
+	<tr>
+            <td>Firma*</td>
+	        <td><input style="width:100%" type="text" class="textfield" maxlength="50" size="20" tabindex="1" name="firma" value="_FIRMA_"></td>
+            <td>Telefon</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="20" size="20" tabindex="8" name="tel1" value="_TEL1_"></td>
+            <td><input style="width:9em;" type="submit" class="button" tabindex="12" name="find" value="Suchen"></td>
+        </tr>              
+            
+        <tr>
+            <td>Name*</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="50" size="20" tabindex="2" name="name" value="_NAME_"></td>
+            <td>Telefon</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="20" size="20" tabindex="8" name="tel2" value="_TEL2_"></td>
+            <td><input style="width:9em;" type="submit" class="button" tabindex="13" name="addadress" value="Hinzufügen"></td>         
+        </tr>
+        
+        <tr>
+            <td>Vorname</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="50" size="20" tabindex="3" name="vorname" value="_VORNAME_"></td>
+            <td>Fax</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="20" size="20" tabindex="10" name="fax" value="_FAX_"></td>
+            <td></td>         
+        </tr>
+        
+        <tr>
+            <td>Straße</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="50" size="20" tabindex="4" name="str1" value="_STR1_"></td>
+            <td>eMail</td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="50" size="20" tabindex="11" name="email" value="_EMAIL_"></td>
+            <td></td>
+        </tr>
+         
+        <tr>
+            <td></td>
+                <td><input style="width:100%" type="text" class="textfield" maxlength="50" size="20" tabindex="4" name="str2" value="_STR2_"></td>
+            <td></td>
+                <td></td>
+            <td></td>
+        </tr> 
+        
+        <tr>
+            <td>PLZ</td>
+            	<td><input type="text" class="textfield" maxlength="5" size="5" tabindex="6" name="plz" value="_PLZ_"> Ort <input type="text" class="textfield" maxlength="50" size="10" tabindex="7" name="ort" value="_ORT_"></td>
+            <td></td>       
+                <td></td>
+            <td></td>
+        </tr>    
+       
+
+	<tr><td class="hauptpunkt" colspan="5">Suchergebnisse</td></tr>
+	<tr><td colspan="4" valign="top">
+	
+			<table width="100%" class="tablelist" id="sortable" cellspacing=0 cellpadding=2>
+			
+			        <tr class="tablelistheader">
+			                <td>Firma<span class="clickable" onclick="sortTable(this)">&uarr;</span><span class="clickable" onclick="sortTable(this,'DESC')">&darr;</span></td>
+			                <td>Name<span class="clickable" onclick="sortTable(this)">&uarr;</span><span class="clickable" onclick="sortTable(this,'DESC')">&darr;</span></td>
+			                <td>Adresse<span class="clickable" onclick="sortTable(this)">&uarr;</span><span class="clickable" onclick="sortTable(this,'DESC')">&darr;</span></td>
+			                <td>Kontakt</td>
+			        </tr>
+
+				<tr valign="top" class="tablelist" id="_nr_" onclick="colorize('_nr_','deladress','aktadress');adressTransfer(_nr_);"><td>_firma_</td><td>_name_</td><td nowrap>_adresse_</td><td nowrap>_kontakt_</td></tr>
+
+			</table>
+			
+			<input type="hidden" name="zeile" value="">
+		</td>
+		
+		<td valign="top" align="right">
+		        <input style="width:9em;" type="submit" class="button" tabindex="14" name="aktadress" value="Aktualisieren" disabled>
+		        <br/><br/>
+	                <input style="width:9em;" type="SUBMIT" class="button" tabindex="15" name="deladress" value="Löschen" disabled></td>
+	</tr>
+	
+	</table>
+	<input type="hidden" name="function" value="4">
+	</form>
+	
+</td></tr></table>
+
+<!-- Eine Error-MSG Box -->
+
+<span id="error" style="width:100%;height:100%;position:absolute;top:0px;left:0px;display:_display_;cursor:wait;">
+<span style="position:absolute;top:50%;left:50%;cursor:default;">
+	<div style="position:absolute;top:-60px;left:-135px;width:300px;height:150px;">
+		<img style="filter:Alpha(opacity=40);-moz-opacity:0.4;opacity:0.4;" src="/skin/shadow.gif">
+	</div>
+	<div class="errorheadline" style="position:absolute;top:-75px;left:-150px;width:300px;height:20px;">
+		Wichtiger Hinweis !
+	</div>
+	<div class="errorbody" style="width:300px;height:100px;position:absolute;top:-55px;left:-150px;">
+		<table width="100%" height="100%"><tr><td style="width:100px;"><img src="/skin/error.gif"></td><td class="errorbody" style="border-style:none;">_error_</td></tr></table>
+	</div>
+	<div class="errorbody" style="width:300px;height:30px;position:absolute;top:45px;left:-150px;border-bottom-style:solid;">
+		<input type="submit" class="button" value="OKAY" onclick="Javascript:document.getElementById('error').style.display='none';document.which.firma.focus()">
+	</div>
+</span>
+</span>
+
+<!-- hier landen die ungefilterten und unformatierten Datensätze für die Übertragung bei Klick -->
+
+<span style="display:none;">
+_fds_
+</span>
+
+</body></html>

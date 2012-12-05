@@ -1,0 +1,52 @@
+<html>
+<head><title>Aktenzeichen und Rechnungsnummer</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+</head>
+<body>
+<table class="mainframe" cellspacing=0 width="100%" height="100%">
+<tr><td align="center" valign="middle">
+
+	<table class="dialog">
+	<form action="olclient.php" method="POST">
+	<tr><td class="hauptpunkt" colspan="5">Neues Aktenzeichen festlegen</td></tr>
+	<tr><td>Freies Aktenzeichen</td><td>_az_</td></tr>
+	<tr><td>Startnummer</td><td><input class="textfield" type="textfield" size="5" maxlength="5" name="azstartnr"></td><td>Jahr</td><td><input class="textfield" type="textfield" size="2" maxlength="2" name="azjahr"></td><td><input type="submit" class="button" name="azfestlegen" value="Festlegen"></td></tr>
+	<tr><td class="hauptpunkt" colspan="5">Neue Rechnungsnummer festlegen</td></tr>
+	<tr><td>Freie Rechnungsnummer</td><td>_rnr_</td></tr>
+	<tr><tr><td>Startnummer</td><td><input class="textfield" type="textfield" size="5" maxlength="5" name="rnrstartnr"></td><td>Jahr</td><td><input class="textfield" type="textfield" size="4" maxlength="4" name="rnrjahr"></td><td><input type="submit" class="button" name="rnrfestlegen" value="Festlegen"></td></tr>
+	<tr><td colspan="5" class="hauptpunkt">Auflistung von vergebenen Aktenzeichen und Rechnungsnummern</td></tr>
+	<tr><td>Aktenzeichen</td><td colspan="3">Rechnungsnummern</td></tr>
+	<tr><td valign="top"><select name="egal" class="list" size="_max_" multiple>
+		<option>_alleaz_</option>
+		</select></td>
+	    <td colspan="3" valign="top"><select name="egal" class="list" size="_max2_" multiple>
+		<option>_allernr_</option>
+		</select></td></tr>
+	<input type="hidden" name="function" value="4">
+	</form>
+	</table>
+		
+</td></tr></table>
+
+<!-- Eine Error-MSG Box -->
+
+<span id="error" style="width:100%;height:100%;position:absolute;top:0px;left:0px;display:_display_;cursor:wait;">
+<span style="position:absolute;top:50%;left:50%;cursor:default;">
+	<div style="position:absolute;top:-60px;left:-135px;width:300px;height:150px;">
+		<img style="filter:Alpha(opacity=40);-moz-opacity:0.4;opacity:0.4;" src="/skin/shadow.gif">
+	</div>
+	<div class="errorheadline" style="position:absolute;top:-75px;left:-150px;width:300px;height:20px;">
+		Wichtiger Hinweis !
+	</div>
+	<div class="errorbody" style="width:300px;height:100px;position:absolute;top:-55px;left:-150px;">
+		<table width="100%" height="100%"><tr><td style="width:100px;"><img src="/skin/error.gif"></td><td class="errorbody" style="border-style:none;">_error_</td></tr></table>
+	</div>
+	<div class="errorbody" style="width:300px;height:30px;position:absolute;top:45px;left:-150px;border-bottom-style:solid;">
+		<input type="button" class="button" value="OKAY" onclick="Javascript:document.getElementById('error').style.display='none'">
+	</div>
+</span>
+</span>
+
+</body></html>

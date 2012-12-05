@@ -1,0 +1,56 @@
+<html>
+<head><title>Handaktenbogen</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+</head>
+<body>
+<table class="mainframe" cellspacing=0 width="100%" height="100%">
+<tr><td align="center" valign="middle">
+
+	<table class="dialog" width="80%">
+	<tr><td colspan="2" style="font-size:9px;text-align:right;"><a href="javascript:print()">Drucken</a></td></tr>
+	<tr><td colspan="2" style="text-align:center;font-size:30px;">_az_</td></tr>
+	<tr><td colspan="2" style="text-align:center;font-size:20px;">_krubrum_</td></tr>
+	<tr><td style="width:50%;font-style:italic;">Anlagedatum</td><td style="text-align:left;">_datum_</td></tr>
+	<tr><td style="font-style:italic;">Wegen</td><td style="text-align:left;">_wegen_</td></tr>
+	<tr><td style="font-style:italic;">Sonstiges</td><td style="text-align:left;">_sonst_</td></tr>
+	<tr><td style="font-style:italic;">Bearbeiter</td><td style="text-align:left;">_bearbeiter_</td></tr>
+	<tr><td style="font-style:italic;">Rechtsgebiet</td><td style="text-align:left;">_rgebiet_</td></tr>
+	<tr><td class="hauptpunkt" colspan="2">Parteien</td></tr>
+	<tr><td style="text-align:center;font-weight:bold;">Mandant(en)</td><td style="text-align:center;font-weight:bold;">Gegner</td></tr>
+	
+	<tr><td style="border-right-style:solid;border-right-width:1px;text-align:left;vertical-align:top;">
+	
+		_mandant_<br><br>
+		
+		</td>
+		<td style="text-align:left;vertical-align:top;">
+		
+		_gegner_<br><br>
+		
+		<p style="text-align:center;font-weight:bold;">Prozessbevollmächtigte(r)</p>
+	
+		_gegnerra_<br><br>
+		
+		</td></tr>
+
+	<tr><td class="hauptpunkt" colspan="2">Sonstige Beteiligte</td></tr>
+	
+	<tr><td align="left" valign="top">
+	
+		<table class="tablelist" style="border:none;cursor:default;" width="100%" cellspacing=0 cellpadding=2>
+
+				<tr><td><p style="font-weight:bold;background-color:#DCDCDC;">_betstatus_</p>_beteiligte_</td></tr>
+
+		</table>
+	</td>
+	<td align="right">
+			<img src="/skin/wvgitter.gif">
+	</td>
+	</tr>
+	</table>
+	
+
+</td></tr></table>
+</body></html>

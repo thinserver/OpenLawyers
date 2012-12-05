@@ -1,0 +1,38 @@
+<html>
+<head><title></title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="/skin/styles.css">
+<script src="scripts.js" type="text/javascript"></script>
+</head>
+<body class="menu" onload="menuinit()">
+	<table class="paneldialog">
+	<tr><td valign="top" align="center">
+	
+		<div style="font-size:15px;">&#160;</div>
+		<a onclick="menuclick(1)" onmouseover="menuover(1)" onmouseout="menuout(1)" href="olclient.php?function=1" target="main"><div id="1" class="panellink">Akte öffnen</div></a>
+		<a onclick="menuclick(2)" onmouseover="menuover(2)" onmouseout="menuout(2)" href="olclient.php?function=2" target="main"><div id="2" class="panellink">Akte anlegen</div></a>
+		<a onclick="menuclick(3)" onmouseover="menuover(3)" onmouseout="menuout(3)" href="olclient.php?function=3" target="main"><div id="3" class="panellink">Wiedervorlagen</div></a>
+	</td></tr>
+	<tr><td style="height:50px;font-size:9px;color:#000000" align="center" valign="middle">
+			<img src="/skin/line.gif" width="90%">
+			Allgemeine Funktionen
+	</td></tr>
+	<tr><td valign="top" align="center">
+		<a onclick="menuclick(4)" onmouseover="menuover(4)" onmouseout="menuout(4)" href="olclient.php?function=19" target="main"><div id="4" class="panellink">Dokumentsuche</div></a>
+		<a onclick="menuclick(5)" onmouseover="menuover(5)" onmouseout="menuout(5)" href="olclient.php?function=4" target="main"><div id="5" class="panellink">Adressbuch</div></a>
+		<a onclick="menuclick(6)" onmouseover="menuover(6)" onmouseout="menuout(6)" href="olclient.php?function=20" target="main"><div id="6" class="panellink">Postbuch</div></a>
+		<a onclick="menuclick(7)" onmouseover="menuover(7)" onmouseout="menuout(7)" href="olclient.php?function=6" target="main"><div id="7" class="panellink">Formatvorlagen</div></a>
+		<a onclick="menuclick(8)" onmouseover="menuover(8)" onmouseout="menuout(8)" href="olclient.php?function=7" target="main"><div id="8" class="panellink">Linkliste</div></a>
+	</td></tr>
+	<tr><td valign="middle" style="height:100%;">
+		<img src="/skin/menulogo.gif">
+	</td></tr>
+
+	<tr><td valign="bottom" align="center">		
+
+		<a onclick="menuclick(9)" onmouseover="menuover(9)" onmouseout="menuout(9)" href="olclient.php?function=8" target="_top"><div id="9" class="panellink">Abmelden</div></a>
+
+	</td></tr>
+	</table>
+
+</body></html>
