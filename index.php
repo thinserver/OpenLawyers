@@ -4855,7 +4855,7 @@
       $sVersion = phpversion();
       if ((int)$sVersion[0] < 5)
       {
-          Error("Fehler: OpenLawyer\'s benötigt min. PHP5 !");
+          Error("Fehler: OpenLawyer\'s benötigt mindestens PHP5 !");
           die;
       }
       
@@ -4863,10 +4863,10 @@
       
       if (phpversion('sqlite') == '')
       {
-          Error("Fehler: OpenLawyer\'s benötigt die SQLite2 Extension !");
+          Error("Fehler: PHP-Bibliothek für SQLite fehlt !");
           die;
       }
-      
+
       // Ohne Oberfläche läuft nichts
       
       if (!file_exists($sGuipath))
