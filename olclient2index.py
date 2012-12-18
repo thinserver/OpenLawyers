@@ -10,5 +10,5 @@ for file in files:
 		content = open(file).read()
 		if '"olclient.php' in content:
 			content = content.replace('"olclient.php', '"index.php')
-#			open(file, 'w').write(content)
+			open(file, 'w').write(content)
 			print file+' changed.'

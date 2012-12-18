@@ -8,7 +8,7 @@ function destroy()
 
 function noframe()
 {
-	if (top.frames.length>0) { top.location.href="olclient.php"; }
+	if (top.frames.length>0) { top.location.href="index.php"; }
 }
 
 // die Methode reset() löscht nur direkte Nutzereingaben; bei einer Vorausfüllung aufgrund vorangegangener Eingaben - POST erhalten - hilft die Methode nicht

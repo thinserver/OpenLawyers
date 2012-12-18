@@ -19,7 +19,7 @@
   // Verzeichnisse müssen aus Sicherheitgründen außerhalb des www-Root-Pfades liegen
   // zugriff nur via PHP, nicht via WebServer
   
-  $sGuipath = '../gui/';
+  $sGuipath = 'html/';
   $sUsergui = "user/";
   $sAdmingui = "admin/";
   $sTmp = "../tmp/";
@@ -72,7 +72,7 @@
       $Sguifile = $sGuipath . (isset($_SESSION['guipath']) ? $_SESSION['guipath'] : "") . $Sguifile;
       if (!file_exists($Sguifile))
       {
-          Error("GUI file " . $Sguifile . " existiert nicht !");
+          Error("HTML-Datei " . $Sguifile . " nicht gefunden !");
           die;
       }
       $Adata = file($Sguifile);
@@ -275,7 +275,7 @@
                   secure_sqlite_close($hDatabase);
                   $aParam['_display_'] = 'block';
                   $aParam['_error_'] = 'Zugriff wegen fehlgeschlagener<br>Loginversuche verweigert !';
-                  ShowGui('login.gui', $aParam);
+                  ShowGui('login.html', $aParam);
               }
           }
       }
@@ -300,7 +300,7 @@
           secure_sqlite_query($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($ipadr) . "','" . date("U") . "','Unbekannt','Unzulässige IP')");
           secure_sqlite_close($hDatabase);
           header("HTTP/1.1 404 Not Found");
-          ShowGui('404.gui', null);
+          ShowGui('404.html', null);
           die;
       }
       
@@ -325,7 +325,7 @@
                   secure_sqlite_close($hDatabase);
                   $aParam['_display_'] = 'block';
                   $aParam['_error_'] = 'Zugriff wegen fehlgeschlagener<br>Loginversuche verweigert !';
-                  ShowGui('login.gui', $aParam);
+                  ShowGui('login.html', $aParam);
               }
           }
       }
@@ -507,13 +507,13 @@
       {
           $aParam['_display_'] = 'block';
           $aParam['_error_'] = 'Name und Passwort<br>eingeben !';
-          ShowGui('login.gui', $aParam);
+          ShowGui('login.html', $aParam);
       }
       if (($aLogindaten['benutzername'] == '') || ($aLogindaten['passwort'] == ''))
       {
           $aParam['_display_'] = 'block';
           $aParam['_error_'] = 'Name und Passwort<br>eingeben !';
-          ShowGui('login.gui', $aParam);
+          ShowGui('login.html', $aParam);
       }
       
       UserSperre($aLogindaten['benutzername']);
@@ -527,7 +527,7 @@
           secure_sqlite_close($hDatabase);
           $aParam['_display_'] = 'block';
           $aParam['_error_'] = 'Zugriff verweigert !';
-          ShowGui('login.gui', $aParam);
+          ShowGui('login.html', $aParam);
       }
       secure_sqlite_query($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Eingeloggt')");
       
@@ -536,20 +536,20 @@
           $_SESSION['ipadresse'] = ip2long(getenv('REMOTE_ADDR'));
           $_SESSION['benutzer'] = 'Administrator';
           $_SESSION['time'] = date('U');
-          $_SESSION['panel'] = 'adminpanel.gui';
+          $_SESSION['panel'] = 'adminpanel.html';
           $_SESSION['guipath'] = $sAdmingui;
           secure_sqlite_close($hDatabase);
-          ShowGui('adminpanel.gui', null);
+          ShowGui('adminpanel.html', null);
       }
       
       $_SESSION['ipadresse'] = ip2long(getenv('REMOTE_ADDR'));
       $_SESSION['benutzer'] = $aLogindaten['benutzername'];
       $_SESSION['time'] = date('U');
-      $_SESSION['panel'] = 'userpanel.gui';
+      $_SESSION['panel'] = 'userpanel.html';
       $_SESSION['userID'] = $aErgebnis[0]['id'];
       $_SESSION['guipath'] = $sUsergui;
       secure_sqlite_close($hDatabase);
-      ShowGui('userpanel.gui', null);
+      ShowGui('userpanel.html', null);
       die;
   }
   
@@ -579,7 +579,7 @@
       session_destroy();
       $aParam['_display_'] = 'none';
       $aParam['_error_'] = '';
-      ShowGui('login.gui', $aParam);
+      ShowGui('login.html', $aParam);
   }
   
   
@@ -721,7 +721,7 @@
       $aParam['_status_'] = '';
       $aParam['_aktion_'] = '';
       $aParam['_error_'] = '';
-      $aParam['_error2_'] = 'Erfolgreich durchgeführt. Sie können sich nun als Administrator <a href="olclient.php" style="color:red;">einloggen</a> und die Datenbank konfigurieren.';
+      $aParam['_error2_'] = 'Erfolgreich durchgef&uuml;hrt. Sie k&ouml;nnen sich nun als Administrator <a href="index.php" style="color:red;">einloggen</a> und die Datenbank konfigurieren.';
       $aParam['_display_'] = 'none';
       
       $bErrStatus = false;
@@ -978,7 +978,7 @@
           $aParam['_display_'] = 'block';
       }
       
-      ShowGui('admin/initdb.gui', $aParam);
+      ShowGui('admin/initdb.html', $aParam);
   }
   
   // Logfile anzeigen und Einträge löschen; Export erfolgt in LOG-Verzeichnis
@@ -1076,7 +1076,7 @@
           $aParam['_event_'] = '';
       }
       
-      ShowGui('logfile.gui', $aParam);
+      ShowGui('logfile.html', $aParam);
   }
   
   // Sicherheit - nur konkret definierte IP-Adressen dürfen Zugriff haben
@@ -1168,7 +1168,7 @@
           $aParam['_max_'] = 1;
       }
       
-      ShowGui('ip.gui', $aParam);
+      ShowGui('ip.html', $aParam);
   }
   
   // Benutzer bearbeiten
@@ -1303,7 +1303,7 @@
           $aParam['_username_'] = $aEintrag;
       }
       
-      ShowGui('user.gui', $aParam);
+      ShowGui('user.html', $aParam);
   }
   
   // Formatvorlagen bearbeiten
@@ -1413,7 +1413,7 @@
           $aParam['_name_'] = 'Keine Einträge vorhanden !';
           $aParam['_max_'] = 1;
       }
-      ShowGui('fvbearbeiten.gui', $aParam);
+      ShowGui('fvbearbeiten.html', $aParam);
   }
   
   // Aktenzeichen (Start) ändern
@@ -1565,7 +1565,7 @@
       
       $aParam['_az_'] = $aAktaz[0]['aznr'] . '-' . $aAktaz[0]['azjahr'];
       $aParam['_rnr_'] = $aAktrnr[0]['jahr'] . '-' . $aAktrnr[0]['nr'];
-      ShowGui('azrnr.gui', $aParam);
+      ShowGui('azrnr.html', $aParam);
   }
   
   // Rechtgebiete bearbeiten
@@ -1660,7 +1660,7 @@
           $aParam['_max_'] = 1;
       }
       
-      ShowGui('rgbearbeiten.gui', $aParam);
+      ShowGui('rgbearbeiten.html', $aParam);
   }
   
   // Statistiken 
@@ -1843,7 +1843,7 @@
       
       secure_sqlite_close($hDatabase);
       
-      ShowGui('statistik.gui', $aParam);
+      ShowGui('statistik.html', $aParam);
   }
   
   // Link-Datenbank
@@ -1932,7 +1932,7 @@
           $aParam['_max_'] = 0;
       }
       
-      ShowGui('linkliste.gui', $aParam);
+      ShowGui('linkliste.html', $aParam);
   }
   
   // Arten der Wiedervorlage festlegen !
@@ -2026,7 +2026,7 @@
           $aParam['_max_'] = 1;
       }
       
-      ShowGui('wvtypen.gui', $aParam);
+      ShowGui('wvtypen.html', $aParam);
   }
   
   function BetArt()
@@ -2127,7 +2127,7 @@
           $aParam['_max_'] = 1;
       }
       
-      ShowGui('betart.gui', $aParam);
+      ShowGui('betart.html', $aParam);
   }
   
   // ------------------------------------ User-Funktionen --------------------------------------------------------------
@@ -2175,12 +2175,12 @@
                   if ($aQuery[0]['status'] == 0)
                   {
                       $_SESSION['aktenstatus'] = 0;
-                      ShowGui('akteoffen.gui', $aParam);
+                      ShowGui('akteoffen.html', $aParam);
                   }
                   else
                   {
                       $_SESSION['aktenstatus'] = 1;
-                      ShowGui('akteabgelegt.gui', $aParam);
+                      ShowGui('akteabgelegt.html', $aParam);
                   }
               }
               else
@@ -2290,12 +2290,12 @@
               if ($aQuery[0]['akten.status'] == 0)
               {
                   $_SESSION['aktenstatus'] = 0;
-                  ShowGui('akteoffen.gui', $aParam);
+                  ShowGui('akteoffen.html', $aParam);
               }
               else
               {
                   $_SESSION['aktenstatus'] = 1;
-                  ShowGui('akteabgelegt.gui', $aParam);
+                  ShowGui('akteabgelegt.html', $aParam);
               }
           }
           else
@@ -2305,7 +2305,7 @@
           }
       }
       
-      ShowGui('openakte.gui', $aParam);
+      ShowGui('openakte.html', $aParam);
   }
   
   // Akte anlegen
@@ -2372,7 +2372,7 @@
               Protokoll($hDatabase,$sProtokollrecord);
 
               secure_sqlite_close($hDatabase);
-              ShowGui('akteoffen.gui', $aParam);
+              ShowGui('akteoffen.html', $aParam);
           }
           else
           {
@@ -2435,7 +2435,7 @@
           $aParam['_user_'] = "Keine Bearbeiter";
       }
       
-      ShowGui('akteanlegen.gui', $aParam);
+      ShowGui('akteanlegen.html', $aParam);
   }
   
   // Handaktenbogen ...
@@ -2554,7 +2554,7 @@
       }
       
       
-      ShowGui('aktenbogen.gui', $aParam);
+      ShowGui('aktenbogen.html', $aParam);
   }
   
   // Adressen eingeben & ändern & suchen 
@@ -2886,7 +2886,7 @@
       }
       
       secure_sqlite_close($hDatabase);
-      ShowGui('adresseingabe.gui', $aParam);
+      ShowGui('adresseingabe.html', $aParam);
   }
   
   // Aktenvita
@@ -3090,7 +3090,7 @@
           $aParam['_bearbeiter_'] = $aBearbeiter;
           $aParam['_bezeichnung_'] = $aBezeichnung;
       }
-      ShowGui('aktenvita.gui', $aParam);
+      ShowGui('aktenvita.html', $aParam);
   }
   
   // Wiedervorlagen anzeigen - aktenunabhängig
@@ -3255,7 +3255,7 @@
           $aParam['_wvtypid_'] = $aWvTypID;
       }
       
-      ShowGui('wvansicht.gui', $aParam);
+      ShowGui('wvansicht.html', $aParam);
   }
   
   // Wiedervorlagen eintragen
@@ -3438,7 +3438,7 @@
           $aParam['_typ1_'] = $aTyp1;
       }
       
-      ShowGui('wvadd.gui', $aParam);
+      ShowGui('wvadd.html', $aParam);
   }
   
   // Formatvorlagen
@@ -3500,7 +3500,7 @@
           $aParam['_nr_'] = '';
           $aParam['_bezeichnung_'] = "Keine Vorlagen gespeichert !";
       }
-      ShowGui('fvwahl.gui', $aParam);
+      ShowGui('fvwahl.html', $aParam);
   }
   
   // Link aus Linkliste öffnen
@@ -3531,7 +3531,7 @@
           $aParam['_nr_'] = $aNr;
       }
       
-      ShowGui('linkwahl.gui', $aParam);
+      ShowGui('linkwahl.html', $aParam);
   }
   
   // Posteingang
@@ -3693,7 +3693,7 @@
           $aParam['_nr_'] = $aNr;
       }
       
-      ShowGui('posteingang.gui', $aParam);
+      ShowGui('posteingang.html', $aParam);
   }
   
   // Postausgang
@@ -3888,7 +3888,7 @@
           $aParam['_status_'] = $aStatus;
       }
       
-      ShowGui('postausgang.gui', $aParam);
+      ShowGui('postausgang.html', $aParam);
   }
   
   // Stammdaten
@@ -4007,7 +4007,7 @@
       $aParam['_user_'] = $aName;
       $aParam['_uaktiv_'] = $aSelected;
       
-      ShowGui('stammdaten.gui', $aParam);
+      ShowGui('stammdaten.html', $aParam);
   }
   
   // Kosten und Rechnungsnummer
@@ -4144,7 +4144,7 @@
           $aParam['_gesamt_'] = number_format($fGesamt, 2, ".", ".");
       }
       
-      ShowGui('kosten.gui', $aParam);
+      ShowGui('kosten.html', $aParam);
   }
   
   // Beteiligte 
@@ -4308,7 +4308,7 @@
           $aParam['_betadresse_'] = $aBetadresse;
       }
       
-      ShowGui('beteiligte.gui', $aParam);
+      ShowGui('beteiligte.html', $aParam);
   }
   
   // Archivierte Akte aktivieren
@@ -4333,7 +4333,7 @@
               OpenAkte();
           }
       }
-      ShowGui('null.gui', null);
+      ShowGui('null.html', null);
   }
   
   // Dokumentensuche
@@ -4458,12 +4458,12 @@
                   if ($aQuery[0]['akten.status'] == 0)
                   {
                       $_SESSION['aktenstatus'] = 0;
-                      ShowGui('akteoffen.gui', $aParam);
+                      ShowGui('akteoffen.html', $aParam);
                   }
                   else
                   {
                       $_SESSION['aktenstatus'] = 1;
-                      ShowGui('akteabgelegt.gui', $aParam);
+                      ShowGui('akteabgelegt.html', $aParam);
                   }
               }
               else
@@ -4481,7 +4481,7 @@
       
       secure_sqlite_close($hDatabase);
       
-      ShowGui('doksuche.gui', $aParam);
+      ShowGui('doksuche.html', $aParam);
   }
   
   // Postbuch - Anzeige der Ein- und Ausgänge aktenübergreifend
@@ -4569,12 +4569,12 @@
                   if ($aQuery[0]['akten.status'] == 0)
                   {
                       $_SESSION['aktenstatus'] = 0;
-                      ShowGui('akteoffen.gui', $aParam);
+                      ShowGui('akteoffen.html', $aParam);
                   }
                   else
                   {
                       $_SESSION['aktenstatus'] = 1;
-                      ShowGui('akteabgelegt.gui', $aParam);
+                      ShowGui('akteabgelegt.html', $aParam);
                   }
               }
               else
@@ -4723,7 +4723,7 @@
       
       $aParam['_anzeigekriterien_'] = $sSuchanzeige;
       
-      ShowGui('postbuch.gui', $aParam);
+      ShowGui('postbuch.html', $aParam);
   }
   
   
@@ -4788,14 +4788,14 @@
       }
       
       secure_sqlite_close($hDatabase);
-      ShowGui('notiz.gui', $aParam);
+      ShowGui('notiz.html', $aParam);
   }
   
   // Termine
   
   function Termine()
   {
-      ShowGui('const.gui', null);
+      ShowGui('const.html', null);
   }
   
   // Akte schlie
@@ -4807,7 +4807,7 @@
       unset($_SESSION['aktenstatus']);
       unset($_SESSION['aktenzeichen']);
       unset($_SESSION['kurzrubrum']);
-      ShowGui('closeakte.gui', null);
+      ShowGui('closeakte.html', null);
   }
   
   // ------------------------------------ Steuerzentrale funktionenaufruf ------------------------------------------
@@ -4914,7 +4914,7 @@
       CheckIntegrity();
       $aParam['_display_'] = 'none';
       $aParam['_error_'] = '';
-      ShowGui('login.gui', $aParam);
+      ShowGui('login.html', $aParam);
   }
   
   // POST-Codes werden vorher von diversen Sonderzeichen befreit ...
@@ -4957,7 +4957,7 @@
       session_destroy();
       $aParam['_display_'] = 'none';
       $aParam['_error_'] = '';
-      ShowGui('login.gui', $aParam);
+      ShowGui('login.html', $aParam);
   }
   
   // Session abgelaufen (mehr als 24h her) ?
@@ -4968,7 +4968,7 @@
       session_destroy();
       $aParam['_display_'] = 'none';
       $aParam['_error_'] = '';
-      ShowGui('login.gui', $aParam);
+      ShowGui('login.html', $aParam);
   }
   
   // okay, alles in Ordnung .. $_POST-Codes = konkrete Funktion, $_GET-Codes Funktionsaufruf / GUI-Aufruf
@@ -4997,7 +4997,7 @@
       
       if (isset($_GET['gui']))
       {
-          if ($_GET['gui'] == "status.gui")
+          if ($_GET['gui'] == "status.html")
           {
               $aParam['_benutzer_'] = $_SESSION['benutzer'];
               ShowGui(MakeSafe($_GET['gui']), $aParam);
@@ -5009,7 +5009,7 @@
       }
       
       header("HTTP/1.1 404 Not Found");
-      ShowGui('404.gui', null);
+      ShowGui('404.html', null);
       die;
   }
   

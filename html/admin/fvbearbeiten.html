@@ -9,14 +9,14 @@
 <tr><td align="center" valign="middle">
 
 	<table class="dialog" cellspacing="10px">
-	<form action="olclient.php" method="POST" enctype="multipart/form-data">
+	<form action="index.php" method="POST" enctype="multipart/form-data">
 	<tr><td colspan="3" class="hauptpunkt">Formatvorlage hinzufügen</td></tr>
 	<tr><td>Bezeichnung</td><td><input class="textfield" type="text" name="bezeichnung" size="15" maxlength="30"></td><td><input class="button" type="submit" value="Hinzufügen" name="hinzufuegen" style="width:100%"></td></tr>
 	<tr><td colspan="3" align="left">Datei auswählen</td></tr>
 	<tr><td colspan="3" align="left"><input class="fileselect" name="vorlage" type="file" size="30" maxlength="100000" accept="*"></td></tr>
 	<input type="hidden" name="function" value="5">
 	</form>
-	<form action="olclient.php" method="POST">
+	<form action="index.php" method="POST">
 	<tr><td colspan="3" class="hauptpunkt">Gespeicherte Vorlagen</td></tr>
 	<tr><td colspan="2"><select class="list" style="width:100%" name="vorlagen[]" size="_max_" multiple>
 	<option value="_nr_">_name_</option>
