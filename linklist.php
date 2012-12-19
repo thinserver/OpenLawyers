@@ -68,3 +68,32 @@ function Linklist()
 		
 		ShowGui('linkliste.html', $aParam);
 }
+
+// Link aus Linkliste öffnen
+
+function Linkliste()
+{
+		global $sDatabase;
+		global $sFvpath;
+		
+		$hDatabase               = secure_sqlite_open($sDatabase);
+		$aParam['_url_']         = '';
+		$aParam['_bezeichnung_'] = 'Keine Links gespeichert !';
+		$aParam['_nr_']          = '';
+		
+		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM linkliste ORDER BY bezeichnung");
+		secure_sqlite_close($hDatabase);
+		
+		if (sizeof($aQuery) != 0) {
+				for ($t = 0; $t < sizeof($aQuery); $t++) {
+						$aUrl[$t]  = base64_decode($aQuery[$t]['ahref']);
+						$aName[$t] = $aQuery[$t]['bezeichnung'];
+						$aNr[$t]   = $aQuery[$t]['nr'];
+				}
+				$aParam['_url_']         = $aUrl;
+				$aParam['_bezeichnung_'] = $aName;
+				$aParam['_nr_']          = $aNr;
+		}
+		
+		ShowGui('linkwahl.html', $aParam);
+}
