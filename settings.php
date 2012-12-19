@@ -10,6 +10,7 @@ $sAdmingui     = "admin/";
 $sTmp          = "../tmp/";
 $sDatabasepath = '../db/';
 $sDatabase     = '../db/akten.opl';
+$sMySQL		= ['localhost', 'OpenLawyers', 'kanzleiserver', 'kanzlei'];
 $sDBName       = "akten.opl";
 $sFvpath       = '../fv/';
 $sAktenpath    = '../akten/';
