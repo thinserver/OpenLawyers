@@ -1,5 +1,59 @@
 <?php
 
+// pr¸ft, ob IP-Adresse der Notation entspricht
+
+function CheckIP($ipadr)
+{
+		$state = 1;
+		$count = 0;
+		$told  = 0;
+		$ipadr = $ipadr . ".";
+		for ($t = 0; $t < strlen($ipadr); $t++) {
+				if ($ipadr[$t] == ".") {
+						$count++;
+						$nums = substr($ipadr, $told, $t - $told);
+						if ((strlen($nums) > 3) || (strlen($nums) == 0)) {
+								$state = 0;
+								break;
+						}
+						// regul‰rer Ausdruck - suche, ob etwas auﬂer 0-9 vorhanden ist
+						if (preg_match("/[^0-9]/", $nums)) {
+								$state = 0;
+								break;
+						}
+						$told = $t + 1;
+				}
+		}
+		if ($count != 4) {
+				$state = 0;
+		}
+		return $state;
+}
+
+// macht aus der IP eine genormte ...
+
+function NormIP($sIpadr)
+{
+		$aZ      = array(
+				'00',
+				'0',
+				''
+		);
+		$sIppart = '';
+		$sNewIP  = '';
+		for ($t = 0; $t < strlen($sIpadr); $t++) {
+				if (($sIpadr[$t]) == '.') {
+						$sIppart = $aZ[strlen($sIppart) - 1] . $sIppart . '.';
+						$sNewIP  = $sNewIP . $sIppart;
+						$sIppart = '';
+				} else {
+						$sIppart = $sIppart . $sIpadr[$t];
+				}
+		}
+		$sNewIP = $sNewIP . $aZ[strlen($sIppart) - 1] . $sIppart;
+		return $sNewIP;
+}
+
 // pr¸ft, ob fehlerhafter Login des Nutzer 3 mal erfolgt ist, falls z.B. von verschiedenen IPs
 
 function CheckIPBlock($nutzername)
