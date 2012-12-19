@@ -7,7 +7,7 @@ function Statistik()
 		global $sDatabase;
 		global $aStatfiles;
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_error_']        = '';
 		$aParam['_display_']      = 'none';
@@ -27,28 +27,28 @@ function Statistik()
 		
 		// Anzahl der Akten
 		
-		$aAktencount = secure_sqlite_array_query($hDatabase, "SELECT COUNT(*) FROM akten");
+		$aAktencount = SQLArrayQuery($hDatabase, "SELECT COUNT(*) FROM akten");
 		if (sizeof($aAktencount) != 0) {
 				$aParam['_akten_'] = $aAktencount[0]['COUNT(*)'];
 		}
 		
 		// Anzahl der Dokumente
 		
-		$aDokcount = secure_sqlite_array_query($hDatabase, "SELECT COUNT(*) FROM aktenvita");
+		$aDokcount = SQLArrayQuery($hDatabase, "SELECT COUNT(*) FROM aktenvita");
 		if (sizeof($aDokcount) != 0) {
 				$aParam['_doks_'] = $aDokcount[0]['COUNT(*)'];
 		}
 		
 		// Honorarumsatz
 		
-		$aHonorar = secure_sqlite_array_query($hDatabase, "SELECT SUM(betrag) FROM rechnungsnummer");
+		$aHonorar = SQLArrayQuery($hDatabase, "SELECT SUM(betrag) FROM rechnungsnummer");
 		if (sizeof($aHonorar) != 0) {
 				$aParam['_umsatz_'] = $aHonorar[0]['SUM(betrag)'];
 		}
 		
 		// Umsatz je Akte gesamt
 		
-		$aDurchschnittumsatz = secure_sqlite_array_query($hDatabase, "SELECT ROUND(SUM(rechnungsnummer.betrag)/COUNT(akten.azID),2) AS durchschnitt FROM akten LEFT JOIN rechnungsnummer ON akten.azID=rechnungsnummer.azID WHERE akten.status=1");
+		$aDurchschnittumsatz = SQLArrayQuery($hDatabase, "SELECT ROUND(SUM(rechnungsnummer.betrag)/COUNT(akten.azID),2) AS durchschnitt FROM akten LEFT JOIN rechnungsnummer ON akten.azID=rechnungsnummer.azID WHERE akten.status=1");
 		if (sizeof($aDurchschnittumsatz) != 0) {
 				$aParam['_durchschnitt_'] = $aDurchschnittumsatz[0]['durchschnitt'];
 		}
@@ -56,7 +56,7 @@ function Statistik()
 		if ($aParam['_akten_'] > 19) {
 				// Erledigte und unerledigte Akten
 				
-				$aAktenerledigt   = secure_sqlite_array_query($hDatabase, "SELECT COUNT(status) FROM akten WHERE status=1");
+				$aAktenerledigt   = SQLArrayQuery($hDatabase, "SELECT COUNT(status) FROM akten WHERE status=1");
 				$iAktenunerledigt = $aAktencount[0]['COUNT(*)'] - $aAktenerledigt[0]['COUNT(status)'];
 				
 				Tortendiagramm(array(
@@ -72,7 +72,7 @@ function Statistik()
 				
 				unset($aValues);
 				unset($aText);
-				$aAktenbearbeiter = secure_sqlite_array_query($hDatabase, "SELECT COUNT(*) AS gesamt, users.username FROM akten,users WHERE users.id=akten.bearbeiterID GROUP BY akten.bearbeiterID ORDER BY gesamt");
+				$aAktenbearbeiter = SQLArrayQuery($hDatabase, "SELECT COUNT(*) AS gesamt, users.username FROM akten,users WHERE users.id=akten.bearbeiterID GROUP BY akten.bearbeiterID ORDER BY gesamt");
 				for ($t = 0; $t < sizeof($aAktenbearbeiter); $t++) {
 						$aValues[$t] = $aAktenbearbeiter[$t]['gesamt'];
 						$aText[$t]   = $aAktenbearbeiter[$t]['users.username'];
@@ -84,7 +84,7 @@ function Statistik()
 				
 				unset($aValues);
 				unset($aText);
-				$aAktenBearbeitererledigt = secure_sqlite_array_query($hDatabase, "SELECT COUNT(status) AS gesamt, users.username FROM akten,users WHERE status=1 AND akten.bearbeiterID=users.id GROUP BY akten.bearbeiterID ORDER BY gesamt");
+				$aAktenBearbeitererledigt = SQLArrayQuery($hDatabase, "SELECT COUNT(status) AS gesamt, users.username FROM akten,users WHERE status=1 AND akten.bearbeiterID=users.id GROUP BY akten.bearbeiterID ORDER BY gesamt");
 				for ($t = 0; $t < sizeof($aAktenBearbeitererledigt); $t++) {
 						$aValues[$t] = round(($aAktenBearbeitererledigt[$t]['gesamt'] / $aAktenbearbeiter[$t]['gesamt']) * 100);
 						$aText[$t]   = $aAktenBearbeitererledigt[$t]['users.username'];
@@ -94,7 +94,7 @@ function Statistik()
 				
 				// Fachgebiete
 				
-				$aFachgebiete = secure_sqlite_array_query($hDatabase, "SELECT COUNT(akten.rechtsgebietID) AS summe, rechtsgebiete.bezeichnung FROM akten,rechtsgebiete WHERE akten.rechtsgebietID=rechtsgebiete.id GROUP BY akten.rechtsgebietID ORDER BY summe");
+				$aFachgebiete = SQLArrayQuery($hDatabase, "SELECT COUNT(akten.rechtsgebietID) AS summe, rechtsgebiete.bezeichnung FROM akten,rechtsgebiete WHERE akten.rechtsgebietID=rechtsgebiete.id GROUP BY akten.rechtsgebietID ORDER BY summe");
 				unset($aValues);
 				unset($aText);
 				for ($t = 0; $t < sizeof($aFachgebiete); $t++) {
@@ -106,7 +106,7 @@ function Statistik()
 				
 				// Umsatz je Fachgebiet
 				
-				$aUmsatzFach = secure_sqlite_array_query($hDatabase, "SELECT SUM(rechnungsnummer.betrag) AS summe, rechtsgebiete.bezeichnung FROM rechnungsnummer, akten, rechtsgebiete WHERE (rechnungsnummer.azID=akten.azID AND rechtsgebiete.id=akten.rechtsgebietID) GROUP BY rechtsgebiete.bezeichnung ORDER BY summe");
+				$aUmsatzFach = SQLArrayQuery($hDatabase, "SELECT SUM(rechnungsnummer.betrag) AS summe, rechtsgebiete.bezeichnung FROM rechnungsnummer, akten, rechtsgebiete WHERE (rechnungsnummer.azID=akten.azID AND rechtsgebiete.id=akten.rechtsgebietID) GROUP BY rechtsgebiete.bezeichnung ORDER BY summe");
 				unset($aValues);
 				unset($aText);
 				for ($t = 0; $t < sizeof($aUmsatzFach); $t++) {
@@ -119,7 +119,7 @@ function Statistik()
 				// Umsatz je Akte je Fachgebiet - berichtigt nur erledigte Vorgänge bzw. Vorgänge, bei denen schon Beträge eingegangen sind
 				// ACHTUNG: sobald mehrere Rechnungsnummern einer Akte zugewiesen sind, ist das Ergebnis FALSCH, da mehrere Ergebniszeilen trotz einer Akte entstehen -> COUNT z alle Zeilen, sodass Betrag durch x*Akte berechnet wird. COUNT(DISTINCT ..) kann dies verhindern, wird aber nicht von SQLITE <3 unterstützt
 				
-				$aUmsatzAkteFach = secure_sqlite_array_query($hDatabase, "SELECT ROUND(SUM(rechnungsnummer.betrag)/COUNT(akten.azID),2) AS durchschnitt, rechtsgebiete.bezeichnung FROM akten LEFT JOIN rechnungsnummer ON akten.azID=rechnungsnummer.azID LEFT JOIN rechtsgebiete ON akten.rechtsgebietID=rechtsgebiete.id WHERE (rechnungsnummer.betrag>0 OR akten.status=1) GROUP BY rechtsgebiete.bezeichnung ORDER BY durchschnitt");
+				$aUmsatzAkteFach = SQLArrayQuery($hDatabase, "SELECT ROUND(SUM(rechnungsnummer.betrag)/COUNT(akten.azID),2) AS durchschnitt, rechtsgebiete.bezeichnung FROM akten LEFT JOIN rechnungsnummer ON akten.azID=rechnungsnummer.azID LEFT JOIN rechtsgebiete ON akten.rechtsgebietID=rechtsgebiete.id WHERE (rechnungsnummer.betrag>0 OR akten.status=1) GROUP BY rechtsgebiete.bezeichnung ORDER BY durchschnitt");
 				
 				unset($aValues);
 				unset($aText);
@@ -132,7 +132,7 @@ function Statistik()
 				
 				// Umsatz je Bearbeiter
 				
-				$aUmsatzBearbeiter = secure_sqlite_array_query($hDatabase, "SELECT SUM(rechnungsnummer.betrag) AS summe, users.username FROM rechnungsnummer, akten, users WHERE (akten.bearbeiterID=users.id AND rechnungsnummer.azID=akten.azID) GROUP BY users.username ORDER BY summe");
+				$aUmsatzBearbeiter = SQLArrayQuery($hDatabase, "SELECT SUM(rechnungsnummer.betrag) AS summe, users.username FROM rechnungsnummer, akten, users WHERE (akten.bearbeiterID=users.id AND rechnungsnummer.azID=akten.azID) GROUP BY users.username ORDER BY summe");
 				unset($aValues);
 				unset($aText);
 				for ($t = 0; $t < sizeof($aUmsatzBearbeiter); $t++) {
@@ -152,10 +152,10 @@ function Statistik()
 				
 				// COUNT()=0 Problem - sobald WVen oder Postin etc finen User nicht vorliegt, sind die Arrays unterschiedlich gros me fen User auch die 0 ausgegeben werden - Lsg. Count(*) ?
 				
-				$aArbeitWV        = secure_sqlite_array_query($hDatabase, "SELECT COUNT(wiedervorlagen.bearbeiterID) AS wv, users.username AS bearbeiter FROM wiedervorlagen, users WHERE users.id=wiedervorlagen.bearbeiterID GROUP BY users.username ORDER BY users.username");
-				$aArbeitAktenvita = secure_sqlite_array_query($hDatabase, "SELECT COUNT(aktenvita.nr) AS vita, users.username AS bearbeiter FROM akten,aktenvita,users WHERE aktenvita.azID=akten.azID AND akten.bearbeiterID=users.id GROUP BY users.username ORDER BY users.username");
-				$aArbeitPostin    = secure_sqlite_array_query($hDatabase, "SELECT COUNT(posteingang.nr) AS postin, users.username AS bearbeiter FROM akten,posteingang,users WHERE akten.azID=posteingang.azID AND akten.bearbeiterID=users.id GROUP BY users.username ORDER BY users.username");
-				$aArbeitPostout   = secure_sqlite_array_query($hDatabase, "SELECT COUNT(postausgang.nr) AS postout, users.username AS bearbeiter FROM akten,postausgang,users WHERE akten.azID=postausgang.azID AND akten.bearbeiterID=users.id GROUP BY users.username ORDER BY users.username");
+				$aArbeitWV        = SQLArrayQuery($hDatabase, "SELECT COUNT(wiedervorlagen.bearbeiterID) AS wv, users.username AS bearbeiter FROM wiedervorlagen, users WHERE users.id=wiedervorlagen.bearbeiterID GROUP BY users.username ORDER BY users.username");
+				$aArbeitAktenvita = SQLArrayQuery($hDatabase, "SELECT COUNT(aktenvita.nr) AS vita, users.username AS bearbeiter FROM akten,aktenvita,users WHERE aktenvita.azID=akten.azID AND akten.bearbeiterID=users.id GROUP BY users.username ORDER BY users.username");
+				$aArbeitPostin    = SQLArrayQuery($hDatabase, "SELECT COUNT(posteingang.nr) AS postin, users.username AS bearbeiter FROM akten,posteingang,users WHERE akten.azID=posteingang.azID AND akten.bearbeiterID=users.id GROUP BY users.username ORDER BY users.username");
+				$aArbeitPostout   = SQLArrayQuery($hDatabase, "SELECT COUNT(postausgang.nr) AS postout, users.username AS bearbeiter FROM akten,postausgang,users WHERE akten.azID=postausgang.azID AND akten.bearbeiterID=users.id GROUP BY users.username ORDER BY users.username");
 				
 				unset($aValues);
 				unset($aText);
@@ -170,7 +170,7 @@ function Statistik()
 				$aParam['_display_'] = 'block';
 		}
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		ShowGui('statistik.html', $aParam);
 }

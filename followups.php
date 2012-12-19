@@ -5,7 +5,7 @@
 function WVTypen()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
@@ -14,12 +14,12 @@ function WVTypen()
 		
 		if (isset($_POST['loeschen'])) {
 				if (isset($_POST['eintraege'])) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT COUNT(*) FROM wvtypen");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT COUNT(*) FROM wvtypen");
 						if ($aQuery[0]['COUNT(*)'] > sizeof($_POST['eintraege'])) {
 								foreach ($_POST['eintraege'] as $iSelected) {
-										$aQuery = secure_sqlite_array_query($hDatabase, "SELECT azID FROM wiedervorlagen WHERE terminID='" . (int) $iSelected . "' LIMIT 1");
+										$aQuery = SQLArrayQuery($hDatabase, "SELECT azID FROM wiedervorlagen WHERE terminID='" . (int) $iSelected . "' LIMIT 1");
 										if (empty($aQuery)) {
-												secure_sqlite_query($hDatabase, "DELETE FROM wvtypen WHERE id='" . (int) $iSelected . "'");
+												SQLQuery($hDatabase, "DELETE FROM wvtypen WHERE id='" . (int) $iSelected . "'");
 										} else {
 												$aParam['_error_']   = "Wiedervorlagentyp ist einer Akte zugeordnet !";
 												$aParam['_display_'] = 'block';
@@ -40,15 +40,15 @@ function WVTypen()
 		if (isset($_POST['hinzufuegen'])) {
 				$sGebiet = $_POST['wvname'];
 				if ($sGebiet != "") {
-						secure_sqlite_query($hDatabase, "INSERT INTO wvtypen (typ) VALUES ('" . $sGebiet . "')");
+						SQLQuery($hDatabase, "INSERT INTO wvtypen (typ) VALUES ('" . $sGebiet . "')");
 				} else {
 						$aParam['_error_']   = "Bitte geben Sie eine Bezeichnung an !";
 						$aParam['_display_'] = 'block';
 				}
 		}
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT * FROM wvtypen ORDER BY typ");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT * FROM wvtypen ORDER BY typ");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es überhaupt Einträge ?
@@ -77,7 +77,7 @@ function WVTypen()
 function Wiedervorlagen()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -101,9 +101,9 @@ function Wiedervorlagen()
 		
 		if (isset($_POST['oeffnen'])) {
 				if (isset($_POST['zeile']) && ($_POST['zeile'] != '')) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT azID FROM wiedervorlagen WHERE nr='" . (int) $_POST['zeile'] . "'");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT azID FROM wiedervorlagen WHERE nr='" . (int) $_POST['zeile'] . "'");
 						if (sizeof($aQuery) != 0) {
-								secure_sqlite_close($hDatabase);
+								CloseDB($hDatabase);
 								unset($_POST);
 								$_POST['oeffnen2'] = 1;
 								$_POST['zeile']    = $aQuery[0]['azID'];
@@ -130,32 +130,32 @@ function Wiedervorlagen()
 				$iUser               = (int) $_POST['bearbeiter'];
 				$iWvTypID            = (int) $_POST['wvtyp'];
 				if (($iUser != 0) && ($iWvTypID != 0)) {
-						$aQuery              = secure_sqlite_array_query($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wvtypen.id, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.bearbeiterID='" . $iUser . "' AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND wvtypen.id=" . $iWvTypID . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
-						$aActuser            = secure_sqlite_array_query($hDatabase, "SELECT username FROM users WHERE id='" . $iUser . "'");
-						$aActWV              = secure_sqlite_array_query($hDatabase, "SELECT typ FROM wvtypen WHERE id='" . $iWvTypID . "'");
+						$aQuery              = SQLArrayQuery($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wvtypen.id, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.bearbeiterID='" . $iUser . "' AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND wvtypen.id=" . $iWvTypID . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
+						$aActuser            = SQLArrayQuery($hDatabase, "SELECT username FROM users WHERE id='" . $iUser . "'");
+						$aActWV              = SQLArrayQuery($hDatabase, "SELECT typ FROM wvtypen WHERE id='" . $iWvTypID . "'");
 						$aParam['_wvuser_']  = $aActuser[0]['username'];
 						$aParam['_whichWV_'] = $aActWV[0]['typ'];
 				} elseif ($iUser != 0) {
-						$aQuery             = secure_sqlite_array_query($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.bearbeiterID='" . $iUser . "' AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
-						$aActuser           = secure_sqlite_array_query($hDatabase, "SELECT username FROM users WHERE id='" . $iUser . "'");
+						$aQuery             = SQLArrayQuery($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.bearbeiterID='" . $iUser . "' AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
+						$aActuser           = SQLArrayQuery($hDatabase, "SELECT username FROM users WHERE id='" . $iUser . "'");
 						$aParam['_wvuser_'] = $aActuser[0]['username'];
 				} elseif ($iWvTypID != 0) {
-						$aQuery              = secure_sqlite_array_query($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wvtypen.id, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND wvtypen.id=" . $iWvTypID . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
-						$aActWV              = secure_sqlite_array_query($hDatabase, "SELECT typ FROM wvtypen WHERE id='" . $iWvTypID . "'");
+						$aQuery              = SQLArrayQuery($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wvtypen.id, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND wvtypen.id=" . $iWvTypID . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
+						$aActWV              = SQLArrayQuery($hDatabase, "SELECT typ FROM wvtypen WHERE id='" . $iWvTypID . "'");
 						$aParam['_wvuser_']  = "sämtliche Nutzer";
 						$aParam['_whichWV_'] = $aActWV[0]['typ'];
 				} else {
-						$aQuery             = secure_sqlite_array_query($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
+						$aQuery             = SQLArrayQuery($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
 						$aParam['_wvuser_'] = "sämtliche Nutzer";
 				}
 		} else {
-				$aQuery = secure_sqlite_array_query($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND users.username='" . $_SESSION['benutzer'] . "' AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
+				$aQuery = SQLArrayQuery($hDatabase, "SELECT akten.kurzruburm, users.username, aktenzeichen.aznr, aktenzeichen.azjahr, wvtypen.typ, wiedervorlagen.zeitunddatum, wiedervorlagen.information, wiedervorlagen.nr FROM akten, users, aktenzeichen, wvtypen, wiedervorlagen WHERE wiedervorlagen.status=0 AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID=aktenzeichen.id AND users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.zeitunddatum<" . $iTermin . " AND users.username='" . $_SESSION['benutzer'] . "' AND akten.azID=aktenzeichen.id ORDER BY wiedervorlagen.zeitunddatum");
 		}
 		
-		$aQuery2 = secure_sqlite_array_query($hDatabase, "SELECT id, username FROM users WHERE username!='Administrator' ORDER BY username");
-		$aQuery3 = secure_sqlite_array_query($hDatabase, "SELECT * FROM wvtypen ORDER BY typ");
+		$aQuery2 = SQLArrayQuery($hDatabase, "SELECT id, username FROM users WHERE username!='Administrator' ORDER BY username");
+		$aQuery3 = SQLArrayQuery($hDatabase, "SELECT * FROM wvtypen ORDER BY typ");
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		$aUser[0]     = 'Alle';
 		$aID[0]       = '0';
@@ -216,7 +216,7 @@ function Wiedervorlagen()
 function AktenWV()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
@@ -232,7 +232,7 @@ function AktenWV()
 								$aParam['_error_']   = 'Bitte geben Sie einen WV-Grund an !';
 								$aParam['_display_'] = 'block';
 						} else {
-								secure_sqlite_query($hDatabase, "INSERT INTO wiedervorlagen (azID,zeitunddatum,terminID,bearbeiterID,bearbeiterDone,information,status) VALUES ('" . $_SESSION['akte'] . "','" . $iWVtermin . "','" . $_POST['wvtyp'] . "','" . $_POST['bearbeiter'] . "','','" . $_POST['wegen'] . "','0')");
+								SQLQuery($hDatabase, "INSERT INTO wiedervorlagen (azID,zeitunddatum,terminID,bearbeiterID,bearbeiterDone,information,status) VALUES ('" . $_SESSION['akte'] . "','" . $iWVtermin . "','" . $_POST['wvtyp'] . "','" . $_POST['bearbeiter'] . "','','" . $_POST['wegen'] . "','0')");
 								Protokoll($hDatabase, "Wiedervorlage für den " . date("d.m.Y", $iWVtermin) . " wegen '" . $_POST['wegen'] . "' eingetragen");
 								$aGetDate = getdate($iWVtermin);
 								if ($aGetDate['weekday'] == 'Sunday' || $aGetDate['weekday'] == 'Saturday') {
@@ -245,9 +245,9 @@ function AktenWV()
 		
 		if (isset($_POST['done'])) {
 				if ((int) ($_POST['zeile']) != 0) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT users.username AS username, wiedervorlagen.zeitunddatum AS termin, wiedervorlagen.information AS grund FROM users,wiedervorlagen WHERE users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.nr='" . (int) $_POST['zeile'] . "'");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT users.username AS username, wiedervorlagen.zeitunddatum AS termin, wiedervorlagen.information AS grund FROM users,wiedervorlagen WHERE users.id=wiedervorlagen.bearbeiterID AND wiedervorlagen.nr='" . (int) $_POST['zeile'] . "'");
 						if ($aQuery[0]['username'] == $_SESSION['benutzer']) {
-								secure_sqlite_query($hDatabase, "UPDATE wiedervorlagen SET status=1, bearbeiterID=NULL, bearbeiterDone='" . $_SESSION['benutzer'] . "' WHERE nr='" . (int) $_POST['zeile'] . "'");
+								SQLQuery($hDatabase, "UPDATE wiedervorlagen SET status=1, bearbeiterID=NULL, bearbeiterDone='" . $_SESSION['benutzer'] . "' WHERE nr='" . (int) $_POST['zeile'] . "'");
 								Protokoll($hDatabase, "Wiedervorlage für den " . date("d.m.Y", $aQuery[0]['termin']) . " wegen '" . $aQuery[0]['grund'] . "' als erledigt markiert.");
 						} else {
 								$aParam['_error_']   = "Nur der zuständige Bearbeiter darf<br>Wiedervorlagen als erledigt markieren !";
@@ -276,14 +276,14 @@ function AktenWV()
 		// SQLite arbeitet selbst bei den SQL Befehlen nicht case sensitiv, allerdings wird in den Abfragearrays case sensitiv wie bei Anlage
 		// zurückgegeben. Daher, für Datenbanken, die BearbeiterDone oder bearbeiterDone enthalten durch AS eine allgemein gültige Zuweisung
 		
-		$aQuery           = secure_sqlite_array_query($hDatabase, "SELECT *, wiedervorlagen.bearbeiterDone AS bearbeiterDone FROM wiedervorlagen LEFT JOIN wvtypen ON wvtypen.id=wiedervorlagen.terminID LEFT JOIN akten ON akten.azID=wiedervorlagen.azID LEFT JOIN users ON users.id=wiedervorlagen.bearbeiterID WHERE wiedervorlagen.azID=" . $_SESSION['akte'] . " ORDER BY wiedervorlagen.zeitunddatum");
-		$aQueryBearbeiter = secure_sqlite_array_query($hDatabase, "SELECT username FROM users, akten WHERE akten.bearbeiterID=users.id AND akten.azID=" . $_SESSION['akte'] . "");
+		$aQuery           = SQLArrayQuery($hDatabase, "SELECT *, wiedervorlagen.bearbeiterDone AS bearbeiterDone FROM wiedervorlagen LEFT JOIN wvtypen ON wvtypen.id=wiedervorlagen.terminID LEFT JOIN akten ON akten.azID=wiedervorlagen.azID LEFT JOIN users ON users.id=wiedervorlagen.bearbeiterID WHERE wiedervorlagen.azID=" . $_SESSION['akte'] . " ORDER BY wiedervorlagen.zeitunddatum");
+		$aQueryBearbeiter = SQLArrayQuery($hDatabase, "SELECT username FROM users, akten WHERE akten.bearbeiterID=users.id AND akten.azID=" . $_SESSION['akte'] . "");
 		
-		// $aQuery=secure_sqlite_array_query($hDatabase,"SELECT wiedervorlagen.bearbeiterDone, users.username, wvtypen.typ, wiedervorlagen.status, wiedervorlagen.zeitunddatum, wiedervorlagen.nr, wiedervorlagen.information, wiedervorlagen.azID FROM users, aktenzeichen, wvtypen, wiedervorlagen WHERE aktenzeichen.id=wiedervorlagen.azID AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID='".$_SESSION['akte']."' AND (users.id=wiedervorlagen.bearbeiterID OR bearbeiterDone!='') ORDER BY wiedervorlagen.zeitunddatum");
-		$aQuery2 = secure_sqlite_array_query($hDatabase, "SELECT id, username FROM users WHERE username!='Administrator' ORDER BY username");
-		$aQuery3 = secure_sqlite_array_query($hDatabase, "SELECT * FROM wvtypen");
+		// $aQuery=SQLArrayQuery($hDatabase,"SELECT wiedervorlagen.bearbeiterDone, users.username, wvtypen.typ, wiedervorlagen.status, wiedervorlagen.zeitunddatum, wiedervorlagen.nr, wiedervorlagen.information, wiedervorlagen.azID FROM users, aktenzeichen, wvtypen, wiedervorlagen WHERE aktenzeichen.id=wiedervorlagen.azID AND wiedervorlagen.terminID=wvtypen.id AND wiedervorlagen.azID='".$_SESSION['akte']."' AND (users.id=wiedervorlagen.bearbeiterID OR bearbeiterDone!='') ORDER BY wiedervorlagen.zeitunddatum");
+		$aQuery2 = SQLArrayQuery($hDatabase, "SELECT id, username FROM users WHERE username!='Administrator' ORDER BY username");
+		$aQuery3 = SQLArrayQuery($hDatabase, "SELECT * FROM wvtypen");
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		// Wiedervorlagenarten
 		

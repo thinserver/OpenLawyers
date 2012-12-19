@@ -6,7 +6,7 @@ function DokSuche()
 {
 		global $sDatabase;
 		global $sAktenpath;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -22,7 +22,7 @@ function DokSuche()
 		
 		if (isset($_POST['suche'])) {
 				if ($_POST['bezeichnung'] != '') {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT akten.kurzruburm, aktenvita.ersteller, aktenvita.nr,aktenzeichen.aznr,aktenzeichen.azjahr,aktenvita.eintragsdatum,aktenvita.beschreibung FROM akten,aktenvita,aktenzeichen WHERE aktenvita.beschreibung LIKE '%" . $_POST['bezeichnung'] . "%' AND aktenvita.azID=akten.azID AND aktenvita.azID=aktenzeichen.id ORDER BY aktenvita.eintragsdatum DESC");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT akten.kurzruburm, aktenvita.ersteller, aktenvita.nr,aktenzeichen.aznr,aktenzeichen.azjahr,aktenvita.eintragsdatum,aktenvita.beschreibung FROM akten,aktenvita,aktenzeichen WHERE aktenvita.beschreibung LIKE '%" . $_POST['bezeichnung'] . "%' AND aktenvita.azID=akten.azID AND aktenvita.azID=aktenzeichen.id ORDER BY aktenvita.eintragsdatum DESC");
 						if (!empty($aQuery)) {
 								for ($t = 0; $t < sizeof($aQuery); $t++) {
 										$aNr[$t]           = $aQuery[$t]['aktenvita.nr'];
@@ -52,12 +52,12 @@ function DokSuche()
 		
 		if (isset($_POST['oeffnen'])) {
 				if ((int) $_POST['zeile'] != 0) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT aktenzeichen.aznr,aktenzeichen.azjahr,aktenvita.* FROM aktenvita,aktenzeichen WHERE aktenvita.nr=" . (int) $_POST['zeile'] . " AND aktenzeichen.id=aktenvita.azID");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT aktenzeichen.aznr,aktenzeichen.azjahr,aktenvita.* FROM aktenvita,aktenzeichen WHERE aktenvita.nr=" . (int) $_POST['zeile'] . " AND aktenzeichen.id=aktenvita.azID");
 						
 						if (!empty($aQuery)) {
 								$sFile = $sAktenpath . $aQuery[0]['aktenzeichen.azjahr'] . '/' . $aQuery[0]['aktenzeichen.aznr'] . '/' . $aQuery[0]['aktenvita.dateiname'];
 								if (file_exists($sFile)) {
-										secure_sqlite_close($hDatabase);
+										CloseDB($hDatabase);
 										preg_match("/\..*$/", $aQuery[0]['aktenvita.dateiname'], $aExt);
 										$sName = $aQuery[0]['aktenvita.beschreibung'] . $aExt[0];
 										
@@ -85,11 +85,11 @@ function DokSuche()
 		
 		if (isset($_POST['akteoeffnen'])) {
 				if ((int) $_POST['zeile'] != 0) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT azID FROM aktenvita WHERE aktenvita.nr=" . (int) $_POST['zeile'] . "");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT azID FROM aktenvita WHERE aktenvita.nr=" . (int) $_POST['zeile'] . "");
 						$iAzID  = $aQuery[0]['azID'];
 						if ($iAzID != 0) {
-								$aQuery = secure_sqlite_array_query($hDatabase, "SELECT akten.status, akten.kurzruburm,akten.wegen,aktenzeichen.aznr,aktenzeichen.azjahr FROM akten,aktenzeichen WHERE akten.azID=" . $iAzID . " AND aktenzeichen.id=" . $iAzID . "");
-								secure_sqlite_close($hDatabase);
+								$aQuery = SQLArrayQuery($hDatabase, "SELECT akten.status, akten.kurzruburm,akten.wegen,aktenzeichen.aznr,aktenzeichen.azjahr FROM akten,aktenzeichen WHERE akten.azID=" . $iAzID . " AND aktenzeichen.id=" . $iAzID . "");
+								CloseDB($hDatabase);
 								
 								$_SESSION['akte']      = $iAzID;
 								$_SESSION['aktenpath'] = $sAktenpath . $aQuery[0]['aktenzeichen.azjahr'] . '/' . $aQuery[0]['aktenzeichen.aznr'] . '/';
@@ -117,7 +117,7 @@ function DokSuche()
 				}
 		}
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		ShowGui('doksuche.html', $aParam);
 }

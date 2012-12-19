@@ -5,7 +5,7 @@
 function Linklist()
 {
 		global $sDatabase;
-		$hDatabase           = secure_sqlite_open($sDatabase);
+		$hDatabase           = OpenDB($sDatabase);
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
 		
@@ -14,7 +14,7 @@ function Linklist()
 		if (isset($_POST['loeschen'])) {
 				if (isset($_POST['eintraege'])) {
 						foreach ($_POST['eintraege'] as $iSelected) {
-								secure_sqlite_query($hDatabase, "DELETE FROM linkliste WHERE nr='" . (int) $iSelected . "'");
+								SQLQuery($hDatabase, "DELETE FROM linkliste WHERE nr='" . (int) $iSelected . "'");
 						}
 				} else {
 						$aParam['_error_']   = "Wählen Sie einen<br>Eintrag aus !";
@@ -37,15 +37,15 @@ function Linklist()
 								$sLink = "http://" . $sLink;
 						}
 						
-						secure_sqlite_query($hDatabase, "INSERT INTO linkliste (bezeichnung,ahref) VALUES ('" . $sBezeichnung . "','" . base64_encode($sLink) . "')");
+						SQLQuery($hDatabase, "INSERT INTO linkliste (bezeichnung,ahref) VALUES ('" . $sBezeichnung . "','" . base64_encode($sLink) . "')");
 				} else {
 						$aParam['_error_']   = "Geben Sie eine URL und eine Bezeichnung an !";
 						$aParam['_display_'] = 'block';
 				}
 		}
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT * FROM linkliste ORDER BY bezeichnung");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT * FROM linkliste ORDER BY bezeichnung");
+		CloseDB($hDatabase);
 		
 		if (sizeof($aLogs) != 0) {
 				// gibt es überhaupt Einträge ?
@@ -76,13 +76,13 @@ function Linkliste()
 		global $sDatabase;
 		global $sFvpath;
 		
-		$hDatabase               = secure_sqlite_open($sDatabase);
+		$hDatabase               = OpenDB($sDatabase);
 		$aParam['_url_']         = '';
 		$aParam['_bezeichnung_'] = 'Keine Links gespeichert !';
 		$aParam['_nr_']          = '';
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM linkliste ORDER BY bezeichnung");
-		secure_sqlite_close($hDatabase);
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM linkliste ORDER BY bezeichnung");
+		CloseDB($hDatabase);
 		
 		if (sizeof($aQuery) != 0) {
 				for ($t = 0; $t < sizeof($aQuery); $t++) {

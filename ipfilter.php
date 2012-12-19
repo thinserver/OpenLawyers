@@ -8,7 +8,7 @@ function Sicherheit()
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		// will jemand Eintrlen ?
 		if (isset($_POST['loeschen'])) {
 				if (isset($_POST['eintraege'])) {
@@ -16,7 +16,7 @@ function Sicherheit()
 								// im HTML Code wird als "name" für <select> ein Array angegeben. Unter diesem Namen findet man bei $_POST das Array(!)
 								if ((int) $iSelected > 1) {
 										// 127.0.0.1 darf nicht gelöscht werden
-										secure_sqlite_query($hDatabase, "DELETE FROM security WHERE nr='" . (int) $iSelected . "'");
+										SQLQuery($hDatabase, "DELETE FROM security WHERE nr='" . (int) $iSelected . "'");
 								} else {
 										$aParam['_error_']   = "127.0.0.1 darf nicht gelöscht werden !";
 										$aParam['_display_'] = 'block';
@@ -33,7 +33,7 @@ function Sicherheit()
 				
 				if ($sIpadr != "") {
 						if (CheckIP($sIpadr)) {
-								secure_sqlite_query($hDatabase, "INSERT INTO security (ipadresse) VALUES ('" . ip2long($sIpadr) . "')");
+								SQLQuery($hDatabase, "INSERT INTO security (ipadresse) VALUES ('" . ip2long($sIpadr) . "')");
 						} else {
 								$aParam['_error_']   = "IP-Adresse entspricht nicht der Notation !";
 								$aParam['_display_'] = 'block';
@@ -45,8 +45,8 @@ function Sicherheit()
 		}
 		
 		// liefert ein Array - jeder Array Eintrag ist wieder ein Array/Hashtable mit den Zeileneinträgen
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT * FROM security");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT * FROM security");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es haupt  Eintr?

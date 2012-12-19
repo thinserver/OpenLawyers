@@ -5,7 +5,7 @@
 function RGbearbeiten()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
@@ -14,12 +14,12 @@ function RGbearbeiten()
 		
 		if (isset($_POST['loeschen'])) {
 				if (isset($_POST['eintraege'])) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT COUNT(*) FROM rechtsgebiete");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT COUNT(*) FROM rechtsgebiete");
 						if ($aQuery[0]['COUNT(*)'] > sizeof($_POST['eintraege'])) {
 								foreach ($_POST['eintraege'] as $iSelected) {
-										$aQuery = secure_sqlite_array_query($hDatabase, "SELECT azID FROM akten WHERE rechtsgebietID='" . (int) $iSelected . "' LIMIT 1");
+										$aQuery = SQLArrayQuery($hDatabase, "SELECT azID FROM akten WHERE rechtsgebietID='" . (int) $iSelected . "' LIMIT 1");
 										if (empty($aQuery)) {
-												secure_sqlite_query($hDatabase, "DELETE FROM rechtsgebiete WHERE id='" . (int) $iSelected . "'");
+												SQLQuery($hDatabase, "DELETE FROM rechtsgebiete WHERE id='" . (int) $iSelected . "'");
 										} else {
 												$aParam['_error_']   = "Rechtsgebiet ist einer Akte zugeordnet !";
 												$aParam['_display_'] = 'block';
@@ -40,15 +40,15 @@ function RGbearbeiten()
 		if (isset($_POST['hinzufuegen'])) {
 				$sGebiet = $_POST['gebiet'];
 				if ($sGebiet != "") {
-						secure_sqlite_query($hDatabase, "INSERT INTO rechtsgebiete (bezeichnung) VALUES ('" . $sGebiet . "')");
+						SQLQuery($hDatabase, "INSERT INTO rechtsgebiete (bezeichnung) VALUES ('" . $sGebiet . "')");
 				} else {
 						$aParam['_error_']   = "Bitte geben Sie ein Rechtsgebiet an !";
 						$aParam['_display_'] = 'block';
 				}
 		}
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT * FROM rechtsgebiete ORDER BY bezeichnung");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT * FROM rechtsgebiete ORDER BY bezeichnung");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es haupt  Eintr?

@@ -14,7 +14,7 @@ function Posteingang()
 				'Datei konnte nicht gespeichert werden !'
 		);
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -29,11 +29,11 @@ function Posteingang()
 		
 		if (isset($_POST['open'])) {
 				if ((int) $_POST['zeile'] != 0) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT dateiname,inhalt FROM posteingang WHERE nr=" . (int) $_POST['zeile'] . "");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT dateiname,inhalt FROM posteingang WHERE nr=" . (int) $_POST['zeile'] . "");
 						if (sizeof($aQuery) != 0) {
 								$sFile = $_SESSION['aktenpath'] . '/IN/' . $aQuery[0]['dateiname'];
 								if (file_exists($sFile)) {
-										secure_sqlite_close($hDatabase);
+										CloseDB($hDatabase);
 										preg_match("/\..*$/", $aQuery[0]['dateiname'], $aExt);
 										$sName = $aQuery[0]['inhalt'] . $aExt[0];
 										
@@ -84,7 +84,7 @@ function Posteingang()
 										
 										if (file_exists($_SESSION['aktenpath'] . '/IN/')) {
 												if (@move_uploaded_file($_FILES['dokument']['tmp_name'], $_SESSION['aktenpath'] . '/IN/' . $sNewFilename)) {
-														secure_sqlite_query($hDatabase, "INSERT INTO posteingang (azID,datum,typ,dateiname,absender,inhalt) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_POST['typ'] . "','" . $sNewFilename . "','" . $_POST['absender'] . "','" . $_POST['inhalt'] . "')");
+														SQLQuery($hDatabase, "INSERT INTO posteingang (azID,datum,typ,dateiname,absender,inhalt) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_POST['typ'] . "','" . $sNewFilename . "','" . $_POST['absender'] . "','" . $_POST['inhalt'] . "')");
 														Protokoll($hDatabase, "Posteingang von Absender '" . $_POST['absender'] . "' wegen '" . $_POST['inhalt'] . "' registriert");
 														$aParam['_error_']   = $aErrorCodes[0];
 														$aParam['_display_'] = 'block';
@@ -97,7 +97,7 @@ function Posteingang()
 						} else {
 								// ohne Dokument
 								
-								secure_sqlite_query($hDatabase, "INSERT INTO posteingang (azID,datum,typ,dateiname,absender,inhalt) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_POST['typ'] . "',NULL,'" . $_POST['absender'] . "','" . $_POST['inhalt'] . "')");
+								SQLQuery($hDatabase, "INSERT INTO posteingang (azID,datum,typ,dateiname,absender,inhalt) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_POST['typ'] . "',NULL,'" . $_POST['absender'] . "','" . $_POST['inhalt'] . "')");
 								Protokoll($hDatabase, "Posteingang von Absender '" . $_POST['absender'] . "' wegen '" . $_POST['inhalt'] . "' registriert");
 								
 								
@@ -108,9 +108,9 @@ function Posteingang()
 				}
 		}
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM posteingang WHERE azID='" . $_SESSION['akte'] . "'");
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM posteingang WHERE azID='" . $_SESSION['akte'] . "'");
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		if (sizeof($aQuery) != 0) {
 				for ($t = 0; $t < sizeof($aQuery); $t++) {
@@ -142,7 +142,7 @@ function Posteingang()
 function Postausgang()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_datum_']      = '';
 		$aParam['_empfaenger_'] = '';
@@ -169,8 +169,8 @@ function Postausgang()
 						if ((int) $_POST['woher'] == 1) {
 								// Bezeichnung wird aus Aktenvita gewählt !
 								if (($_POST['inhalt']) != '') {
-										$aInhaltak = secure_sqlite_array_query($hDatabase, "SELECT beschreibung FROM aktenvita WHERE nr=" . (int) $_POST['inhalt'] . "");
-										secure_sqlite_query($hDatabase, "INSERT INTO postausgang (azID,datum,empfaenger,inhalt,user,typ,aktenvitaID) VALUES ('" . $_SESSION['akte'] . "','" . date('U') . "','" . $_POST['empfaenger'] . "','" . $aInhaltak[0]['beschreibung'] . "','" . $_POST['bearbeiter'] . "','" . $_POST['typ'] . "','" . $_POST['inhalt'] . "')");
+										$aInhaltak = SQLArrayQuery($hDatabase, "SELECT beschreibung FROM aktenvita WHERE nr=" . (int) $_POST['inhalt'] . "");
+										SQLQuery($hDatabase, "INSERT INTO postausgang (azID,datum,empfaenger,inhalt,user,typ,aktenvitaID) VALUES ('" . $_SESSION['akte'] . "','" . date('U') . "','" . $_POST['empfaenger'] . "','" . $aInhaltak[0]['beschreibung'] . "','" . $_POST['bearbeiter'] . "','" . $_POST['typ'] . "','" . $_POST['inhalt'] . "')");
 										Protokoll($hDatabase, "Postausgang an Empfänger '" . $_POST['empfaenger'] . "' wegen '" . $aInhaltak[0]['beschreibung'] . "' registriert");
 										
 								} else {
@@ -183,7 +183,7 @@ function Postausgang()
 								if ((int) $_POST['woher'] == 2) {
 										// Bezeichnung selbst eingegeben
 										if ($_POST['inhalt2'] != '') {
-												secure_sqlite_query($hDatabase, "INSERT INTO postausgang (azID,datum,empfaenger,inhalt,user,typ,aktenvitaID) VALUES ('" . $_SESSION['akte'] . "','" . date('U') . "','" . $_POST['empfaenger'] . "','" . $_POST['inhalt2'] . "','" . $_POST['bearbeiter'] . "','" . $_POST['typ'] . "',NULL)");
+												SQLQuery($hDatabase, "INSERT INTO postausgang (azID,datum,empfaenger,inhalt,user,typ,aktenvitaID) VALUES ('" . $_SESSION['akte'] . "','" . date('U') . "','" . $_POST['empfaenger'] . "','" . $_POST['inhalt2'] . "','" . $_POST['bearbeiter'] . "','" . $_POST['typ'] . "',NULL)");
 												Protokoll($hDatabase, "Postausgang an Empfänger '" . $_POST['empfaenger'] . "' wegen '" . $_POST['inhalt2'] . "' registriert");
 										} else {
 												$aParam['_error_']   = "Bitte Inhalt des Schreibens angeben !";
@@ -201,11 +201,11 @@ function Postausgang()
 		}
 		if (isset($_POST['oeffnen'])) {
 				if ((int) $_POST['zeile'] != 0) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
 						if (sizeof($aQuery) != 0) {
 								$sFile = $_SESSION['aktenpath'] . $aQuery[0]['dateiname'];
 								if (file_exists($sFile)) {
-										secure_sqlite_close($hDatabase);
+										CloseDB($hDatabase);
 										preg_match("/\..*$/", $aQuery[0]['dateiname'], $aExt);
 										$sName = $aQuery[0]['beschreibung'] . $aExt[0];
 										
@@ -233,7 +233,7 @@ function Postausgang()
 				}
 		}
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT beschreibung,nr FROM aktenvita WHERE azID='" . $_SESSION['akte'] . "' AND dateiname!='' ORDER BY nr DESC");
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT beschreibung,nr FROM aktenvita WHERE azID='" . $_SESSION['akte'] . "' AND dateiname!='' ORDER BY nr DESC");
 		
 		if (sizeof($aQuery) != 0) {
 				for ($t = 0; $t < sizeof($aQuery); $t++) {
@@ -247,7 +247,7 @@ function Postausgang()
 				$aParam['_checked2_']    = '';
 		}
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT username FROM users WHERE username!='Administrator'");
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT username FROM users WHERE username!='Administrator'");
 		
 		if (sizeof($aQuery) != 0) {
 				unset($aSelected);
@@ -264,9 +264,9 @@ function Postausgang()
 		}
 		
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM postausgang WHERE azID='" . $_SESSION['akte'] . "'");
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM postausgang WHERE azID='" . $_SESSION['akte'] . "'");
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		if (sizeof($aQuery) != 0) {
 				for ($t = 0; $t < sizeof($aQuery); $t++) {
@@ -325,7 +325,7 @@ function Postbuch()
 		
 		global $sDatabase;
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -356,11 +356,11 @@ function Postbuch()
 		if (isset($_POST['oeffnen'])) {
 				if ($_POST['zeile'] != '') {
 						$iAzID  = (int) (substr(strrchr($_POST['zeile'], '_'), 1));
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT akten.status, akten.kurzruburm,akten.wegen,aktenzeichen.aznr,aktenzeichen.azjahr FROM akten,aktenzeichen WHERE akten.azID=" . $iAzID . " AND aktenzeichen.id=" . $iAzID);
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT akten.status, akten.kurzruburm,akten.wegen,aktenzeichen.aznr,aktenzeichen.azjahr FROM akten,aktenzeichen WHERE akten.azID=" . $iAzID . " AND aktenzeichen.id=" . $iAzID);
 						
 						if (sizeof($aQuery) != 0) {
 								unset($aParam);
-								secure_sqlite_close($hDatabase);
+								CloseDB($hDatabase);
 								$_SESSION['akte']         = $iAzID;
 								$_SESSION['aktenpath']    = $sAktenpath . $aQuery[0]['aktenzeichen.azjahr'] . '/' . $aQuery[0]['aktenzeichen.aznr'] . '/';
 								$aParam['_az_']           = $aQuery[0]['aktenzeichen.aznr'] . "-" . $aQuery[0]['aktenzeichen.azjahr'];
@@ -463,17 +463,17 @@ function Postbuch()
 		
 		if ($iPostbuchteil != 3) {
 				$sPraeQuery = "SELECT 'Ausgang' AS richtung, p.inhalt AS inhalt, p.datum AS datum, p.typ AS form, p.empfaenger AS kontakt, a.kurzruburm AS krubrum, az.aznr AS nr, az.azjahr AS jahr, az.id AS id FROM postausgang p, aktenzeichen az, akten a WHERE p.azID=az.id AND a.azID=az.id";
-				$aQuery     = secure_sqlite_array_query($hDatabase, $sPraeQuery . $sQueryString);
+				$aQuery     = SQLArrayQuery($hDatabase, $sPraeQuery . $sQueryString);
 		}
 		
 		// der Posteingang soll nur abgefragt werden, wenn NICHT nach dem Postausgang (Nr. 2) gesucht wird
 		
 		if ($iPostbuchteil != 2) {
 				$sPraeQuery = "SELECT 'Eingang' AS richtung, p.inhalt AS inhalt, p.datum AS datum, p.typ AS form, p.absender AS kontakt, a.kurzruburm AS krubrum, az.aznr AS nr, az.azjahr AS jahr, az.id AS id FROM posteingang p, aktenzeichen az, akten a WHERE p.azID=az.id AND a.azID=az.id";
-				$aQuery2    = secure_sqlite_array_query($hDatabase, $sPraeQuery . $sQueryString2);
+				$aQuery2    = SQLArrayQuery($hDatabase, $sPraeQuery . $sQueryString2);
 		}
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		// die späte Rache für zwei getrennte, unterschiedliche Tabellen Posteingang, Postausgang
 		// mühsam array zusammenfügen und sortieren nach Datum der Einträge - was sekundengenau läuft ;-)

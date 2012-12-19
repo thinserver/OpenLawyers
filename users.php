@@ -5,7 +5,7 @@
 function Benutzer()
 {
 		global $sDatabase;
-		$hDatabase           = secure_sqlite_open($sDatabase);
+		$hDatabase           = OpenDB($sDatabase);
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
 		
@@ -18,9 +18,9 @@ function Benutzer()
 				if (($sUsername != "") && ($sPw != "") && ($sPw2 != "")) {
 						if ($sPw == $sPw2) {
 								if (strlen($sPw) > 5) {
-										$aEntry = secure_sqlite_array_query($hDatabase, "SELECT username FROM users WHERE username='" . $sUsername . "'");
+										$aEntry = SQLArrayQuery($hDatabase, "SELECT username FROM users WHERE username='" . $sUsername . "'");
 										if (sizeof($aEntry) == 0) {
-												secure_sqlite_query($hDatabase, "INSERT INTO users (username,passwort) VALUES ('" . $sUsername . "','" . MD5($sPw) . "')");
+												SQLQuery($hDatabase, "INSERT INTO users (username,passwort) VALUES ('" . $sUsername . "','" . MD5($sPw) . "')");
 										} else {
 												$aParam['_error_']   = "Benutzer existiert bereits !";
 												$aParam['_display_'] = 'block';
@@ -45,10 +45,10 @@ function Benutzer()
 				if (isset($_POST['user'])) {
 						$iUser = (int) $_POST['user'];
 						if ($iUser != 1) {
-								$aQuery = secure_sqlite_array_query($hDatabase, "SELECT akten.azID FROM akten LEFT JOIN wiedervorlagen ON akten.azID=wiedervorlagen.azID WHERE ((akten.bearbeiterID='" . $iUser . "') OR (wiedervorlagen.bearbeiterID='" . $iUser . "')) LIMIT 1");
+								$aQuery = SQLArrayQuery($hDatabase, "SELECT akten.azID FROM akten LEFT JOIN wiedervorlagen ON akten.azID=wiedervorlagen.azID WHERE ((akten.bearbeiterID='" . $iUser . "') OR (wiedervorlagen.bearbeiterID='" . $iUser . "')) LIMIT 1");
 								
 								if (empty($aQuery)) {
-										secure_sqlite_query($hDatabase, "DELETE FROM users WHERE id='" . $iUser . "'");
+										SQLQuery($hDatabase, "DELETE FROM users WHERE id='" . $iUser . "'");
 								} else {
 										$aParam['_error_']   = "Benutzer ist einer Akte oder aktiven Wiedervorlagen zugeordnet !";
 										$aParam['_display_'] = 'block';
@@ -69,7 +69,7 @@ function Benutzer()
 						
 						if ($sPw == $sPw2) {
 								if (strlen($sPw) > 5) {
-										secure_sqlite_query($hDatabase, "UPDATE users SET passwort='" . MD5($sPw) . "' WHERE id='" . (int) $_POST['user'] . "'");
+										SQLQuery($hDatabase, "UPDATE users SET passwort='" . MD5($sPw) . "' WHERE id='" . (int) $_POST['user'] . "'");
 								} else {
 										$aParam['_error_']   = "Passwort muss mindestens aus 6 Zeichen bestehen !";
 										$aParam['_display_'] = 'block';
@@ -86,8 +86,8 @@ function Benutzer()
 		
 		// liefert ein Array - jeder Array Eintrag ist wieder ein Array/Hashtable mit den Zeileneinträgen
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT id,username FROM users ORDER BY username");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT id,username FROM users ORDER BY username");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es haupt  Eintr?

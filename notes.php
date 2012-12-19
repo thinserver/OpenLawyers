@@ -6,7 +6,7 @@ function Kurzvermerk()
 {
 		global $sDatabase;
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -29,7 +29,7 @@ function Kurzvermerk()
 								$iBytes = fputs($hFile, $_POST['inhalt']);
 								fclose($hFile);
 								if ($iBytes == strlen($_POST['inhalt'])) {
-										secure_sqlite_query($hDatabase, "INSERT INTO aktenvita (azID,eintragsdatum,ersteller,dateiname,beschreibung) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_SESSION['benutzer'] . "','" . $sFilename . "','" . $_POST['wegen'] . "')");
+										SQLQuery($hDatabase, "INSERT INTO aktenvita (azID,eintragsdatum,ersteller,dateiname,beschreibung) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_SESSION['benutzer'] . "','" . $sFilename . "','" . $_POST['wegen'] . "')");
 										Protokoll($hDatabase, "Kurzvermerk zu '" . $_POST['wegen'] . "' erstellt.");
 										unset($aParam);
 										$aParam['_error_']   = 'Vermerk erstellt.';
@@ -50,6 +50,6 @@ function Kurzvermerk()
 				}
 		}
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		ShowGui('notiz.html', $aParam);
 }

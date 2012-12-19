@@ -189,7 +189,7 @@ function InitDB()
 		
 		$aAktionen[] = "Datenbankdatei " . $sDatabase . " erzeugen";
 		
-		$hDatabase = secure_sqlite_open($sDatabase, $sError);
+		$hDatabase = OpenDB($sDatabase, $sError);
 		
 		// Tabellen erzeugen & Standardwerte eintragen
 		
@@ -202,7 +202,7 @@ function InitDB()
 				
 				unset($aErrorMess);
 				for ($t = 0; $t < sizeof($aTables); $t++) {
-						secure_sqlite_query($hDatabase, $aTables[$t], $sError);
+						SQLQuery($hDatabase, $aTables[$t], $sError);
 						if ($sError != null) {
 								$sMessage     = 'Fehlgeschlagen';
 								$aErrorMess[] = "Index " . $t . " - " . $sError;
@@ -225,7 +225,7 @@ function InitDB()
 				
 				unset($aErrorMess);
 				for ($t = 0; $t < sizeof($aDBIndex); $t++) {
-						secure_sqlite_query($hDatabase, $aDBIndex[$t], $sError);
+						SQLQuery($hDatabase, $aDBIndex[$t], $sError);
 						if ($sError != null) {
 								$sMessage     = 'Fehlgeschlagen';
 								$aErrorMess[] = "Index " . $t . " - " . $sError;
@@ -248,7 +248,7 @@ function InitDB()
 				
 				unset($aErrorMess);
 				for ($t = 0; $t < sizeof($aDBBasis); $t++) {
-						secure_sqlite_query($hDatabase, $aDBBasis[$t], $sError);
+						SQLQuery($hDatabase, $aDBBasis[$t], $sError);
 						if ($sError != null) {
 								$sMessage     = 'Fehlgeschlagen';
 								$aErrorMess[] = "Index " . $t . " - " . $sError;
@@ -265,7 +265,7 @@ function InitDB()
 				}
 				
 				
-				secure_sqlite_close($hDatabase);
+				CloseDB($hDatabase);
 		} else {
 				$aStatus[]  = $sError;
 				$bErrStatus = true;

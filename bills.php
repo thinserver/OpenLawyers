@@ -5,7 +5,7 @@
 function Kosten()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -20,14 +20,14 @@ function Kosten()
 		$aParam['_display_']   = 'none';
 		
 		if (isset($_POST['zuweisen'])) {
-				$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM freieRNR");
-				secure_sqlite_query($hDatabase, "UPDATE freieRNR SET nr='" . ((int) $aQuery[0]['nr'] + 1) . "'");
-				secure_sqlite_query($hDatabase, "INSERT INTO rechnungsnummer(nr,jahr,azID,betrag) VALUES ('" . $aQuery[0]['nr'] . "','" . $aQuery[0]['jahr'] . "','" . $_SESSION['akte'] . "','" . floatval($_POST['rnrbetrag']) . "')");
+				$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM freieRNR");
+				SQLQuery($hDatabase, "UPDATE freieRNR SET nr='" . ((int) $aQuery[0]['nr'] + 1) . "'");
+				SQLQuery($hDatabase, "INSERT INTO rechnungsnummer(nr,jahr,azID,betrag) VALUES ('" . $aQuery[0]['nr'] . "','" . $aQuery[0]['jahr'] . "','" . $_SESSION['akte'] . "','" . floatval($_POST['rnrbetrag']) . "')");
 				Protokoll($hDatabase, "Rechnungsnummer " . $aQuery[0]['jahr'] . " - " . $aQuery[0]['nr'] . " zugewiesen.");
 		}
 		
 		if (isset($_POST['pkhzuweisen'])) {
-				secure_sqlite_query($hDatabase, "INSERT INTO rechnungsnummer(nr,jahr,azID,betrag) VALUES ('0','0','" . $_SESSION['akte'] . "','" . floatval($_POST['pkhbetrag']) . "')");
+				SQLQuery($hDatabase, "INSERT INTO rechnungsnummer(nr,jahr,azID,betrag) VALUES ('0','0','" . $_SESSION['akte'] . "','" . floatval($_POST['pkhbetrag']) . "')");
 				Protokoll($hDatabase, "BerH / PKH zugewiesen.");
 		}
 		
@@ -36,7 +36,7 @@ function Kosten()
 				if ($_POST['zeile'] != '') {
 						if ($_POST['zeile'][0] == "b") {
 								$iID = (int) substr($_POST['zeile'], 1);
-								secure_sqlite_query($hDatabase, "UPDATE rechnungsnummer SET betrag='" . floatval($_POST[$_POST['zeile']]) . "' WHERE id='" . $iID . "'");
+								SQLQuery($hDatabase, "UPDATE rechnungsnummer SET betrag='" . floatval($_POST[$_POST['zeile']]) . "' WHERE id='" . $iID . "'");
 						} else {
 								$aParam['_error_']   = "Keine Auswahl getroffen !";
 								$aParam['_display_'] = 'block';
@@ -49,7 +49,7 @@ function Kosten()
 		
 		if (isset($_POST['zufuegen'])) {
 				if (($_POST['grund'] != '') && ($_POST['betrag'] != '')) {
-						secure_sqlite_query($hDatabase, "INSERT INTO kosten(azID,datum,grund,betrag) VALUES ('" . $_SESSION['akte'] . "','" . date('U') . "','" . $_POST['grund'] . "','" . floatval($_POST['betrag']) . "')");
+						SQLQuery($hDatabase, "INSERT INTO kosten(azID,datum,grund,betrag) VALUES ('" . $_SESSION['akte'] . "','" . date('U') . "','" . $_POST['grund'] . "','" . floatval($_POST['betrag']) . "')");
 						Protokoll($hDatabase, "Kosten in Höhe von " . $_POST['betrag'] . " (EUR) für '" . $_POST['grund'] . "' erfasst.");
 				} else {
 						$aParam['_error_']   = "Bitte Betrag und Grund angeben !";
@@ -59,7 +59,7 @@ function Kosten()
 		if (isset($_POST['del'])) {
 				if ($_POST['zeile'] != '') {
 						if ($_POST['zeile'][0] != "b") {
-								secure_sqlite_query($hDatabase, "DELETE FROM kosten WHERE nr='" . (int) $_POST['zeile'] . "'");
+								SQLQuery($hDatabase, "DELETE FROM kosten WHERE nr='" . (int) $_POST['zeile'] . "'");
 						} else {
 								$aParam['_error_']   = "Keine Auswahl getroffen !";
 								$aParam['_display_'] = 'block';
@@ -70,10 +70,10 @@ function Kosten()
 				}
 		}
 		
-		$aQuery  = secure_sqlite_array_query($hDatabase, "SELECT * FROM freieRNR");
-		$aQuery2 = secure_sqlite_array_query($hDatabase, "SELECT * FROM rechnungsnummer WHERE azID='" . $_SESSION['akte'] . "'");
-		$aQuery3 = secure_sqlite_array_query($hDatabase, "SELECT * FROM kosten WHERE azID='" . $_SESSION['akte'] . "'");
-		secure_sqlite_close($hDatabase);
+		$aQuery  = SQLArrayQuery($hDatabase, "SELECT * FROM freieRNR");
+		$aQuery2 = SQLArrayQuery($hDatabase, "SELECT * FROM rechnungsnummer WHERE azID='" . $_SESSION['akte'] . "'");
+		$aQuery3 = SQLArrayQuery($hDatabase, "SELECT * FROM kosten WHERE azID='" . $_SESSION['akte'] . "'");
+		CloseDB($hDatabase);
 		
 		$aParam['_nextrnr_'] = $aQuery[0]['jahr'] . " - " . $aQuery[0]['nr'];
 		

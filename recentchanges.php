@@ -14,7 +14,7 @@ function Protokoll($hDatabase, $sProtokollvermerk)
 		// Falls Datei noch nicht existiert - alte Installationen, bei Anlage der Akte, Eintrag in DB
 		
 		if (!file_exists($sProtokollfilename)) {
-				secure_sqlite_query($hDatabase, "INSERT INTO aktenvita (azID,eintragsdatum,ersteller,dateiname,beschreibung) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','System','protokoll.txt','Aktenprotokoll')");
+				SQLQuery($hDatabase, "INSERT INTO aktenvita (azID,eintragsdatum,ersteller,dateiname,beschreibung) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','System','protokoll.txt','Aktenprotokoll')");
 				$sFirstRecord = date("d.m.Y") . ": System: Aktenprotokoll zu Akte " . $_SESSION['aktenzeichen'] . " angelegt \n";
 		}
 		
@@ -29,7 +29,7 @@ function Protokoll($hDatabase, $sProtokollvermerk)
 		} else {
 				// Hinweis für Admin in Datenbanklog
 				
-				secure_sqlite_query($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . $_SESSION['ipadresse'] . "','" . date("U") . "','" . $_SESSION['benutzer'] . "','Akte " . $_SESSION['aktenzeichen'] . ": Protokolldatei öffnen/anlegen gescheitert')");
+				SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . $_SESSION['ipadresse'] . "','" . date("U") . "','" . $_SESSION['benutzer'] . "','Akte " . $_SESSION['aktenzeichen'] . ": Protokolldatei öffnen/anlegen gescheitert')");
 				
 		}
 		

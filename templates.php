@@ -6,7 +6,7 @@ function FvBearbeiten()
 {
 		global $sDatabase;
 		global $sFvpath;
-		$hDatabase           = secure_sqlite_open($sDatabase);
+		$hDatabase           = OpenDB($sDatabase);
 		$aErrorCodes         = array(
 				'Upload erfolgreich',
 				'Die Datei ist zu groß',
@@ -22,17 +22,17 @@ function FvBearbeiten()
 		
 		if (isset($_POST['vorlagen'])) {
 				foreach ($_POST['vorlagen'] as $iSelected) {
-						$aFiles = secure_sqlite_array_query($hDatabase, "SELECT filename FROM formatvorlagen WHERE nr='" . (int) $iSelected . "'");
+						$aFiles = SQLArrayQuery($hDatabase, "SELECT filename FROM formatvorlagen WHERE nr='" . (int) $iSelected . "'");
 						if (sizeof($aFiles) != 0) {
 								if (file_exists($sFvpath . $aFiles[0]['filename'])) {
 										if (@unlink($sFvpath . $aFiles[0]['filename'])) {
-												secure_sqlite_query($hDatabase, "DELETE FROM formatvorlagen WHERE nr='" . (int) $iSelected . "'");
+												SQLQuery($hDatabase, "DELETE FROM formatvorlagen WHERE nr='" . (int) $iSelected . "'");
 										} else {
 												$aParam['_error_']   = 'Vorlage konnte nicht gelöscht werden !';
 												$aParam['_display_'] = 'block';
 										}
 								} else {
-										secure_sqlite_query($hDatabase, "DELETE FROM formatvorlagen WHERE nr='" . (int) $iSelected . "'");
+										SQLQuery($hDatabase, "DELETE FROM formatvorlagen WHERE nr='" . (int) $iSelected . "'");
 								}
 						}
 				}
@@ -50,7 +50,7 @@ function FvBearbeiten()
 								$sNewFilename = date("dMYHis") . '.unknown';
 						}
 						if (@move_uploaded_file($_FILES['vorlage']['tmp_name'], $sFvpath . $sNewFilename)) {
-								secure_sqlite_query($hDatabase, "INSERT INTO formatvorlagen (name,filename) VALUES ('" . $sName . "','" . $sNewFilename . "')");
+								SQLQuery($hDatabase, "INSERT INTO formatvorlagen (name,filename) VALUES ('" . $sName . "','" . $sNewFilename . "')");
 								$aParam['_error_']   = $aErrorCodes[0];
 								$aParam['_display_'] = 'block';
 						} else {
@@ -65,8 +65,8 @@ function FvBearbeiten()
 				}
 		}
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT nr,name FROM formatvorlagen ORDER BY name");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT nr,name FROM formatvorlagen ORDER BY name");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es überhaupt Einträge ?

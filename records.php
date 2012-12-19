@@ -5,7 +5,7 @@
 function AZfestlegen()
 {
 		global $sDatabase;
-		$hDatabase           = secure_sqlite_open($sDatabase);
+		$hDatabase           = OpenDB($sDatabase);
 		$aParam['_error_']   = "";
 		$aParam['_display_'] = "none";
 		
@@ -24,12 +24,12 @@ function AZfestlegen()
 										// fragt zunächst ab, ob das gewählte START-Aktenzeichen schon existiert oder ob es 
 										// vor bestehenden Aktenzeichen liegt - wegen des Fortlaufens unzulässig
 										
-										$aGet = secure_sqlite_array_query($hDatabase, "SELECT aznr,azjahr FROM aktenzeichen WHERE aznr>=" . $_POST['azstartnr'] . " AND azjahr=" . $_POST['azjahr']);
+										$aGet = SQLArrayQuery($hDatabase, "SELECT aznr,azjahr FROM aktenzeichen WHERE aznr>=" . $_POST['azstartnr'] . " AND azjahr=" . $_POST['azjahr']);
 										if (sizeof($aGet) != 0) {
 												$aParam['_error_']   = "Neues (Start-)Aktenzeichen muss bestehenden Aktenzeichen folgen !";
 												$aParam['_display_'] = 'block';
 										} else {
-												secure_sqlite_query($hDatabase, "UPDATE freiesAZ SET aznr=" . $_POST['azstartnr'] . ", azjahr=" . $_POST['azjahr']);
+												SQLQuery($hDatabase, "UPDATE freiesAZ SET aznr=" . $_POST['azstartnr'] . ", azjahr=" . $_POST['azjahr']);
 										}
 								} else {
 										$aParam['_error_']   = "Sie müssen Startnummer und Jahr angeben !";
@@ -54,12 +54,12 @@ function AZfestlegen()
 										// fragt zunächst ab, ob das gewählte START-Rechnungsnummer schon existiert oder ob es 
 										// vor bestehenden Rechnungsnummern liegt - wegen des Fortlaufens unzulässig
 										
-										$aGet = secure_sqlite_array_query($hDatabase, "SELECT nr,jahr FROM rechnungsnummer WHERE nr>=" . $_POST['rnrstartnr'] . " AND jahr=" . $_POST['rnrjahr']);
+										$aGet = SQLArrayQuery($hDatabase, "SELECT nr,jahr FROM rechnungsnummer WHERE nr>=" . $_POST['rnrstartnr'] . " AND jahr=" . $_POST['rnrjahr']);
 										if (sizeof($aGet) != 0) {
 												$aParam['_error_']   = "Neue (Start-)Rechnungsnummer muss bestehenden Rechnungsnummern folgen !";
 												$aParam['_display_'] = 'block';
 										} else {
-												secure_sqlite_query($hDatabase, "UPDATE freieRNR SET nr=" . $_POST['rnrstartnr'] . ", jahr=" . $_POST['rnrjahr']);
+												SQLQuery($hDatabase, "UPDATE freieRNR SET nr=" . $_POST['rnrstartnr'] . ", jahr=" . $_POST['rnrjahr']);
 										}
 								} else {
 										$aParam['_error_']   = "Sie müssen Startnummer und Jahr angeben !";
@@ -69,11 +69,11 @@ function AZfestlegen()
 				}
 		}
 		
-		$aAzs    = secure_sqlite_array_query($hDatabase, "SELECT * FROM aktenzeichen");
-		$aRnrn   = secure_sqlite_array_query($hDatabase, "SELECT * FROM rechnungsnummer");
-		$aAktaz  = secure_sqlite_array_query($hDatabase, "SELECT * FROM freiesAZ");
-		$aAktrnr = secure_sqlite_array_query($hDatabase, "SELECT * FROM freieRNR");
-		secure_sqlite_close($hDatabase);
+		$aAzs    = SQLArrayQuery($hDatabase, "SELECT * FROM aktenzeichen");
+		$aRnrn   = SQLArrayQuery($hDatabase, "SELECT * FROM rechnungsnummer");
+		$aAktaz  = SQLArrayQuery($hDatabase, "SELECT * FROM freiesAZ");
+		$aAktrnr = SQLArrayQuery($hDatabase, "SELECT * FROM freieRNR");
+		CloseDB($hDatabase);
 		
 		if (sizeof($aAzs) != 0) {
 				// gibt es überhaupt Einträge ?
@@ -119,7 +119,7 @@ function OpenAkte()
 		global $sDatabase;
 		global $sAktenpath;
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -136,11 +136,11 @@ function OpenAkte()
 		
 		if (isset($_POST['oeffnen1'])) {
 				if (($_POST['aznr'] != '') && ($_POST['azjahr'] != '')) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT id,aznr,azjahr FROM aktenzeichen WHERE aznr=" . (int) $_POST['aznr'] . " AND azjahr=" . (int) $_POST['azjahr'] . "");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT id,aznr,azjahr FROM aktenzeichen WHERE aznr=" . (int) $_POST['aznr'] . " AND azjahr=" . (int) $_POST['azjahr'] . "");
 						if (sizeof($aQuery) != 0) {
 								$_SESSION['akte'] = $aQuery[0]['id'];
-								$aQuery           = secure_sqlite_array_query($hDatabase, "SELECT kurzruburm,wegen,status FROM akten WHERE azID=" . $aQuery[0]['id'] . "");
-								secure_sqlite_close($hDatabase);
+								$aQuery           = SQLArrayQuery($hDatabase, "SELECT kurzruburm,wegen,status FROM akten WHERE azID=" . $aQuery[0]['id'] . "");
+								CloseDB($hDatabase);
 								$_SESSION['aktenpath'] = $sAktenpath . (int) $_POST['azjahr'] . '/' . (int) $_POST['aznr'] . '/';
 								
 								$aParam['_az_']           = (int) $_POST['aznr'] . "-" . (int) $_POST['azjahr'];
@@ -160,7 +160,7 @@ function OpenAkte()
 								$aParam['_error_']   = "Keine Akte gefunden !";
 								$aParam['_display_'] = 'block';
 						}
-						secure_sqlite_close($hDatabase);
+						CloseDB($hDatabase);
 				} else {
 						$aParam['_error_']   = "Ungültiges Aktenzeichen !";
 						$aParam['_display_'] = "block";
@@ -191,7 +191,7 @@ function OpenAkte()
 						}
 						$strFind = join(' AND ', $aPost);
 						
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT DISTINCT users.username, akten.kurzruburm, akten.status, akten.anlagedatum, akten.azID, aktenzeichen.aznr, aktenzeichen.azjahr FROM akten, aktenzeichen, users LEFT JOIN beteiligte ON akten.azID=beteiligte.azID LEFT JOIN adressen ON beteiligte.adressenID=adressen.id WHERE akten.azID=aktenzeichen.id AND users.id=akten.bearbeiterID AND " . $strFind . " ORDER BY akten.anlagedatum DESC");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT DISTINCT users.username, akten.kurzruburm, akten.status, akten.anlagedatum, akten.azID, aktenzeichen.aznr, aktenzeichen.azjahr FROM akten, aktenzeichen, users LEFT JOIN beteiligte ON akten.azID=beteiligte.azID LEFT JOIN adressen ON beteiligte.adressenID=adressen.id WHERE akten.azID=aktenzeichen.id AND users.id=akten.bearbeiterID AND " . $strFind . " ORDER BY akten.anlagedatum DESC");
 						
 						if (!empty($aQuery)) {
 								for ($t = 0; $t < sizeof($aQuery); $t++) {
@@ -217,7 +217,7 @@ function OpenAkte()
 								$aParam['_error_']   = "Keine Akte gefunden !";
 								$aParam['_display_'] = "block";
 						}
-						secure_sqlite_close($hDatabase);
+						CloseDB($hDatabase);
 				} else {
 						$aParam['_error_']   = "Keine Suchkriterien angegeben !";
 						$aParam['_display_'] = "block";
@@ -228,8 +228,8 @@ function OpenAkte()
 		
 		if (isset($_POST['oeffnen2'])) {
 				if ($_POST['zeile'] != '') {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT akten.status, akten.kurzruburm,akten.wegen,aktenzeichen.aznr,aktenzeichen.azjahr FROM akten,aktenzeichen WHERE akten.azID=" . $_POST['zeile'] . " AND aktenzeichen.id=" . $_POST['zeile'] . "");
-						secure_sqlite_close($hDatabase);
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT akten.status, akten.kurzruburm,akten.wegen,aktenzeichen.aznr,aktenzeichen.azjahr FROM akten,aktenzeichen WHERE akten.azID=" . $_POST['zeile'] . " AND aktenzeichen.id=" . $_POST['zeile'] . "");
+						CloseDB($hDatabase);
 						
 						$_SESSION['akte']      = $_POST['zeile'];
 						$_SESSION['aktenpath'] = $sAktenpath . $aQuery[0]['aktenzeichen.azjahr'] . '/' . $aQuery[0]['aktenzeichen.aznr'] . '/';
@@ -271,15 +271,15 @@ function CreateAkte()
 		if (isset($_POST['anlegen'])) {
 				// Jetzt soll Akte angelegt werden -> machen wirs ! 
 				if (($_POST['rubrum'] != '') && ($_POST['wegen'] != '')) {
-						$hDatabase = secure_sqlite_open($sDatabase);
-						$aQuery    = secure_sqlite_array_query($hDatabase, "SELECT aznr,azjahr FROM freiesAZ");
+						$hDatabase = OpenDB($sDatabase);
+						$aQuery    = SQLArrayQuery($hDatabase, "SELECT aznr,azjahr FROM freiesAZ");
 						$iNextNr   = (int) $aQuery[0]['aznr'] + 1;
-						secure_sqlite_query($hDatabase, "UPDATE freiesAZ SET aznr=" . $iNextNr . "");
+						SQLQuery($hDatabase, "UPDATE freiesAZ SET aznr=" . $iNextNr . "");
 						$iAznr   = (int) $aQuery[0]['aznr'];
 						$iAzjahr = (int) $aQuery[0]['azjahr'];
-						secure_sqlite_query($hDatabase, "INSERT INTO aktenzeichen (aznr,azjahr) VALUES (" . (int) $aQuery[0]['aznr'] . "," . (int) $aQuery[0]['azjahr'] . ")");
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT id FROM aktenzeichen WHERE aznr=" . (int) $aQuery[0]['aznr'] . " AND azjahr=" . (int) $aQuery[0]['azjahr'] . "");
-						secure_sqlite_query($hDatabase, "INSERT INTO akten (azID,anlagedatum,kurzruburm,wegen,sonstiges,rechtsgebietID,bearbeiterID,status) VALUES (" . $aQuery[0]['id'] . "," . date('U') . ",'" . $_POST['rubrum'] . "','" . $_POST['wegen'] . "','" . $_POST['sonst'] . "','" . $_POST['rgebiet'] . "','" . $_POST['bearbeiter'] . "','0')");
+						SQLQuery($hDatabase, "INSERT INTO aktenzeichen (aznr,azjahr) VALUES (" . (int) $aQuery[0]['aznr'] . "," . (int) $aQuery[0]['azjahr'] . ")");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT id FROM aktenzeichen WHERE aznr=" . (int) $aQuery[0]['aznr'] . " AND azjahr=" . (int) $aQuery[0]['azjahr'] . "");
+						SQLQuery($hDatabase, "INSERT INTO akten (azID,anlagedatum,kurzruburm,wegen,sonstiges,rechtsgebietID,bearbeiterID,status) VALUES (" . $aQuery[0]['id'] . "," . date('U') . ",'" . $_POST['rubrum'] . "','" . $_POST['wegen'] . "','" . $_POST['sonst'] . "','" . $_POST['rgebiet'] . "','" . $_POST['bearbeiter'] . "','0')");
 						
 						
 						$sPath = $iAzjahr . '/' . $iAznr;
@@ -310,7 +310,7 @@ function CreateAkte()
 						
 						Protokoll($hDatabase, $sProtokollrecord);
 						
-						secure_sqlite_close($hDatabase);
+						CloseDB($hDatabase);
 						ShowGui('akteoffen.html', $aParam);
 				} else {
 						$aParam['_error_']   = "Bitte füllen Sie Kurzrubrum und Wegen aus !";
@@ -318,12 +318,12 @@ function CreateAkte()
 				}
 		}
 		
-		$hDatabase        = secure_sqlite_open($sDatabase);
-		$aQuery           = secure_sqlite_array_query($hDatabase, "SELECT aznr,azjahr FROM freiesAZ");
+		$hDatabase        = OpenDB($sDatabase);
+		$aQuery           = SQLArrayQuery($hDatabase, "SELECT aznr,azjahr FROM freiesAZ");
 		$aParam['_az_']   = $aQuery[0]['aznr'] . "-" . $aQuery[0]['azjahr'];
 		$aParam['_date_'] = date('d. M Y');
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM rechtsgebiete ORDER BY bezeichnung");
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM rechtsgebiete ORDER BY bezeichnung");
 		if (sizeof($aQuery) != 0) {
 				for ($t = 0; $t < sizeof($aQuery); $t++) {
 						$aNr[$t]   = $aQuery[$t]['id'];
@@ -336,8 +336,8 @@ function CreateAkte()
 				$aParam['_rgebiet_'] = "Keine Gebiete";
 		}
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT id,username FROM users WHERE username!='Administrator' ORDER BY username");
-		secure_sqlite_close($hDatabase);
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT id,username FROM users WHERE username!='Administrator' ORDER BY username");
+		CloseDB($hDatabase);
 		
 		unset($aNr);
 		unset($aWhat);
@@ -390,7 +390,7 @@ function AktenBogen()
 		}
 		
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_az_']         = '';
 		$aParam['_krubrum_']    = '';
@@ -406,10 +406,10 @@ function AktenBogen()
 		$aParam['_betstatus_']  = '';
 		
 		
-		$aQuery  = secure_sqlite_array_query($hDatabase, "SELECT * FROM akten, aktenzeichen, users, rechtsgebiete WHERE akten.azID='" . $_SESSION['akte'] . "' AND akten.azID=aktenzeichen.id AND akten.rechtsgebietID=rechtsgebiete.id AND akten.bearbeiterID=users.id");
-		$aQuery2 = secure_sqlite_array_query($hDatabase, "SELECT adressen.*,beteiligtenart.arten,beteiligte.* FROM adressen,beteiligte,beteiligtenart WHERE adressen.id=beteiligte.adressenID AND beteiligte.azID='" . $_SESSION['akte'] . "' AND beteiligte.beteiligtenartID=beteiligtenart.id ORDER BY beteiligtenartID");
+		$aQuery  = SQLArrayQuery($hDatabase, "SELECT * FROM akten, aktenzeichen, users, rechtsgebiete WHERE akten.azID='" . $_SESSION['akte'] . "' AND akten.azID=aktenzeichen.id AND akten.rechtsgebietID=rechtsgebiete.id AND akten.bearbeiterID=users.id");
+		$aQuery2 = SQLArrayQuery($hDatabase, "SELECT adressen.*,beteiligtenart.arten,beteiligte.* FROM adressen,beteiligte,beteiligtenart WHERE adressen.id=beteiligte.adressenID AND beteiligte.azID='" . $_SESSION['akte'] . "' AND beteiligte.beteiligtenartID=beteiligtenart.id ORDER BY beteiligtenartID");
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		if (!empty($aQuery)) {
 				$aParam['_az_']         = $aQuery[0]['aktenzeichen.aznr'] . "-" . $aQuery[0]['aktenzeichen.azjahr'];
@@ -471,7 +471,7 @@ function AktenBogen()
 function Adressen()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -503,7 +503,7 @@ function Adressen()
 						// Adressen auf Doppeleingabe prüfen und ggf. warnen !
 						
 						$bDoppelflag = 0;
-						$aDoppelt    = secure_sqlite_array_query($hDatabase, "SELECT * FROM adressen WHERE (firma='" . $aAdresse['firma'] . "' AND firma!='')  OR (name='" . $aAdresse['name'] . "' AND name!='')");
+						$aDoppelt    = SQLArrayQuery($hDatabase, "SELECT * FROM adressen WHERE (firma='" . $aAdresse['firma'] . "' AND firma!='')  OR (name='" . $aAdresse['name'] . "' AND name!='')");
 						
 						if (sizeof($aDoppelt) != 0) {
 								$bDoppelflag = 1;
@@ -523,13 +523,13 @@ function Adressen()
 						$sKeys   = $sKeys . key($aAdresse) . ")";
 						$sValues = $sValues . current($aAdresse) . "')";
 						
-						secure_sqlite_query($hDatabase, "INSERT INTO adressen " . $sKeys . " VALUES " . $sValues . "");
+						SQLQuery($hDatabase, "INSERT INTO adressen " . $sKeys . " VALUES " . $sValues . "");
 						
 						// Anzeige aller vergleichbaren Einträge
 						
 						if ($bDoppelflag == 1) {
 								unset($aDoppelt);
-								$aDoppelt = secure_sqlite_array_query($hDatabase, "SELECT * FROM adressen WHERE (firma='" . $aAdresse['firma'] . "' AND firma!='')  OR (name='" . $aAdresse['name'] . "' AND name!='')");
+								$aDoppelt = SQLArrayQuery($hDatabase, "SELECT * FROM adressen WHERE (firma='" . $aAdresse['firma'] . "' AND firma!='')  OR (name='" . $aAdresse['name'] . "' AND name!='')");
 								for ($t = 0; $t < sizeof($aDoppelt); $t++) {
 										$aAdrid[$t] = $aDoppelt[$t]['id'];
 										$aFirma[$t] = (($aDoppelt[$t]['firma'] != "") ? $aDoppelt[$t]['firma'] : "&nbsp;");
@@ -603,7 +603,7 @@ function Adressen()
 				// Für den Fall, dass nur nach Telefonnummern gesucht werden soll, gibt es keinen Suchstring
 				
 				if ((empty($sVars) && ($bTelsuche)) || (!empty($sVars))) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM adressen " . $sVars);
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM adressen " . $sVars);
 						if (!empty($aQuery)) {
 								$z = 0;
 								
@@ -697,9 +697,9 @@ function Adressen()
 		
 		if (isset($_POST['deladress'])) {
 				if ((int) $_POST['zeile'] != 0) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM beteiligte WHERE adressenID='" . (int) $_POST['zeile'] . "'");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM beteiligte WHERE adressenID='" . (int) $_POST['zeile'] . "'");
 						if (empty($aQuery)) {
-								secure_sqlite_query($hDatabase, "DELETE FROM adressen WHERE id='" . (int) $_POST['zeile'] . "'");
+								SQLQuery($hDatabase, "DELETE FROM adressen WHERE id='" . (int) $_POST['zeile'] . "'");
 								$aParam['_error_']   = "Eintrag gelöscht !";
 								$aParam['_display_'] = 'block';
 						} else {
@@ -734,7 +734,7 @@ function Adressen()
 										$sVars = $sVars . $sKey . "='" . $sValue . "'";
 								}
 								
-								secure_sqlite_query($hDatabase, "UPDATE adressen SET " . $sVars . " WHERE id='" . (int) $_POST['zeile'] . "'");
+								SQLQuery($hDatabase, "UPDATE adressen SET " . $sVars . " WHERE id='" . (int) $_POST['zeile'] . "'");
 								$aParam['_error_']   = "Eintrag aktualisiert !";
 								$aParam['_display_'] = 'block';
 						}
@@ -745,7 +745,7 @@ function Adressen()
 				}
 		}
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		ShowGui('adresseingabe.html', $aParam);
 }
 
@@ -755,7 +755,7 @@ function AktenVita()
 {
 		global $sDatabase;
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -782,20 +782,20 @@ function AktenVita()
 		
 		if (isset($_POST['loeschen'])) {
 				if ($_POST['zeile'] != '') {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
 						if (sizeof($aQuery) != 0) {
 								if ($aQuery[0]['dateiname'] != 'protokoll.txt') {
 										if (file_exists($_SESSION['aktenpath'] . $aQuery[0]['dateiname'])) {
 												if (@unlink($_SESSION['aktenpath'] . $aQuery[0]['dateiname'])) {
-														secure_sqlite_query($hDatabase, "DELETE FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
-														secure_sqlite_query($hDatabase, "UPDATE Postausgang SET aktenvitaID=NULL WHERE aktenvitaID=" . (int) $_POST['zeile'] . "");
+														SQLQuery($hDatabase, "DELETE FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
+														SQLQuery($hDatabase, "UPDATE Postausgang SET aktenvitaID=NULL WHERE aktenvitaID=" . (int) $_POST['zeile'] . "");
 														Protokoll($hDatabase, "Dokument '" . $aQuery[0]['beschreibung'] . "' aus Aktenvita gelöscht.");
 												} else {
 														$aParam['_error_']   = 'Dokument konnte nicht gelöscht werden !';
 														$aParam['_display_'] = 'block';
 												}
 										} else {
-												secure_sqlite_query($hDatabase, "DELETE FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
+												SQLQuery($hDatabase, "DELETE FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
 												Protokoll($hDatabase, "Dokument '" . $aQuery[0]['beschreibung'] . "' aus Aktenvita gelöscht.");
 										}
 								} else {
@@ -816,11 +816,11 @@ function AktenVita()
 		
 		if (isset($_POST['oeffnen'])) {
 				if ($_POST['zeile'] != '') {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM aktenvita WHERE nr=" . (int) $_POST['zeile'] . "");
 						if (sizeof($aQuery) != 0) {
 								$sFile = $_SESSION['aktenpath'] . $aQuery[0]['dateiname'];
 								if (file_exists($sFile)) {
-										secure_sqlite_close($hDatabase);
+										CloseDB($hDatabase);
 										preg_match("/\..*$/", $aQuery[0]['dateiname'], $aExt);
 										$sName = $aQuery[0]['beschreibung'] . $aExt[0];
 										
@@ -860,7 +860,7 @@ function AktenVita()
 						}
 						
 						if (@move_uploaded_file($_FILES['dokument']['tmp_name'], $_SESSION['aktenpath'] . $sNewFilename)) {
-								secure_sqlite_query($hDatabase, "INSERT INTO aktenvita (azID,eintragsdatum,ersteller,dateiname,beschreibung) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_POST['bearbeiter'] . "','" . $sNewFilename . "','" . $_POST['bezeichnung'] . "')");
+								SQLQuery($hDatabase, "INSERT INTO aktenvita (azID,eintragsdatum,ersteller,dateiname,beschreibung) VALUES ('" . $_SESSION['akte'] . "','" . date("U") . "','" . $_POST['bearbeiter'] . "','" . $sNewFilename . "','" . $_POST['bezeichnung'] . "')");
 								Protokoll($hDatabase, "Dokument '" . $_POST['bezeichnung'] . "' in Aktenvita eingetragen.");
 								$aParam['_error_']   = $aErrorCodes[0];
 								$aParam['_display_'] = 'block';
@@ -879,12 +879,12 @@ function AktenVita()
 				}
 		}
 		
-		$aLogs  = secure_sqlite_array_query($hDatabase, "SELECT nr,eintragsdatum,dateiname,beschreibung,ersteller FROM aktenvita WHERE aktenvita.azID=" . $_SESSION['akte']);
-		$aUsers = secure_sqlite_array_query($hDatabase, "SELECT id,username FROM users WHERE username!='Administrator'");
+		$aLogs  = SQLArrayQuery($hDatabase, "SELECT nr,eintragsdatum,dateiname,beschreibung,ersteller FROM aktenvita WHERE aktenvita.azID=" . $_SESSION['akte']);
+		$aUsers = SQLArrayQuery($hDatabase, "SELECT id,username FROM users WHERE username!='Administrator'");
 		
-		$aAktenbearbeiter = secure_sqlite_array_query($hDatabase, "SELECT users.username FROM users,akten WHERE akten.bearbeiterID=users.id AND akten.azID=" . $_SESSION['akte'] . "");
+		$aAktenbearbeiter = SQLArrayQuery($hDatabase, "SELECT users.username FROM users,akten WHERE akten.bearbeiterID=users.id AND akten.azID=" . $_SESSION['akte'] . "");
 		
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aUsers) == 0) {
 				for ($t = 0; $t < sizeof($aUsers); $t++) {
@@ -921,15 +921,15 @@ function AktenVita()
 function ActAkte()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
-		$aQuery = secure_sqlite_array_query($hDatabase, "SELECT status FROM akten WHERE azID='" . $_SESSION['akte'] . "'");
+		$aQuery = SQLArrayQuery($hDatabase, "SELECT status FROM akten WHERE azID='" . $_SESSION['akte'] . "'");
 		if (sizeof($aQuery) != 0) {
 				if ($aQuery[0]['status'] == "1") {
-						secure_sqlite_query($hDatabase, "UPDATE akten SET status='0' WHERE azID='" . $_SESSION['akte'] . "'");
+						SQLQuery($hDatabase, "UPDATE akten SET status='0' WHERE azID='" . $_SESSION['akte'] . "'");
 						Protokoll($hDatabase, "Akte reaktiviert.");
 						
-						secure_sqlite_close($hDatabase);
+						CloseDB($hDatabase);
 						unset($_POST);
 						$_POST['oeffnen2'] = 1;
 						$_POST['zeile']    = $_SESSION['akte'];

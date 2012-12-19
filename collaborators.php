@@ -5,7 +5,7 @@
 function BetArt()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
@@ -14,12 +14,12 @@ function BetArt()
 		
 		if (isset($_POST['loeschen'])) {
 				if (isset($_POST['eintraege'])) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT COUNT(*) FROM beteiligtenart");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT COUNT(*) FROM beteiligtenart");
 						if ($aQuery[0]['COUNT(*)'] > sizeof($_POST['eintraege'])) {
 								foreach ($_POST['eintraege'] as $iSelected) {
-										$aQuery = secure_sqlite_array_query($hDatabase, "SELECT azID FROM beteiligte WHERE beteiligtenartID='" . (int) $iSelected . "' LIMIT 1");
+										$aQuery = SQLArrayQuery($hDatabase, "SELECT azID FROM beteiligte WHERE beteiligtenartID='" . (int) $iSelected . "' LIMIT 1");
 										if (empty($aQuery)) {
-												secure_sqlite_query($hDatabase, "DELETE FROM beteiligtenart WHERE id='" . (int) $iSelected . "'");
+												SQLQuery($hDatabase, "DELETE FROM beteiligtenart WHERE id='" . (int) $iSelected . "'");
 										} else {
 												$aParam['_error_']   = "Beteiligter ist einer Akte zugeordnet !";
 												$aParam['_display_'] = 'block';
@@ -40,9 +40,9 @@ function BetArt()
 		if (isset($_POST['hinzufuegen'])) {
 				$sGebiet = $_POST['betname'];
 				if ($sGebiet != "") {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT arten FROM beteiligtenart WHERE arten='" . $sGebiet . "'");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT arten FROM beteiligtenart WHERE arten='" . $sGebiet . "'");
 						if (empty($aQuery)) {
-								secure_sqlite_query($hDatabase, "INSERT INTO beteiligtenart (arten) VALUES ('" . $sGebiet . "')");
+								SQLQuery($hDatabase, "INSERT INTO beteiligtenart (arten) VALUES ('" . $sGebiet . "')");
 						} else {
 								$aParam['_error_']   = "Beteiligter existiert bereits !";
 								$aParam['_display_'] = 'block';
@@ -53,8 +53,8 @@ function BetArt()
 				}
 		}
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT * FROM beteiligtenart ORDER BY arten");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT * FROM beteiligtenart ORDER BY arten");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es überhaupt Einträge ?
@@ -83,7 +83,7 @@ function BetArt()
 function Beteiligte()
 {
 		global $sDatabase;
-		$hDatabase = secure_sqlite_open($sDatabase);
+		$hDatabase = OpenDB($sDatabase);
 		
 		$aParam = POSTerhalten($_POST);
 		
@@ -103,7 +103,7 @@ function Beteiligte()
 				if ($_POST['zeile'] != '') {
 						if ($_POST['zeile'][0] == "b") {
 								$iID = (int) substr($_POST['zeile'], 1);
-								secure_sqlite_query($hDatabase, "DELETE FROM beteiligte WHERE id='" . $iID . "'");
+								SQLQuery($hDatabase, "DELETE FROM beteiligte WHERE id='" . $iID . "'");
 						}
 						
 						else {
@@ -123,7 +123,7 @@ function Beteiligte()
 								// Im Kern wird geschaut, ob der hinzugefügte Beteiligte schon in anderer Beteiligungsart
 								// mit einer anderen Akte verknüpft ist.
 								
-								$aKollision = secure_sqlite_array_query($hDatabase, "SELECT aktenzeichen.aznr AS aznr, aktenzeichen.azjahr AS azjahr, adressen.firma AS firma, adressen.name AS name FROM beteiligte, adressen, aktenzeichen WHERE beteiligte.adressenID=" . $_POST['zeile'] . " AND beteiligte.beteiligtenartID!=" . $_POST['betart'] . " AND beteiligte.azID!=" . $_SESSION['akte'] . " AND aktenzeichen.id=beteiligte.azID AND adressen.id=beteiligte.adressenID");
+								$aKollision = SQLArrayQuery($hDatabase, "SELECT aktenzeichen.aznr AS aznr, aktenzeichen.azjahr AS azjahr, adressen.firma AS firma, adressen.name AS name FROM beteiligte, adressen, aktenzeichen WHERE beteiligte.adressenID=" . $_POST['zeile'] . " AND beteiligte.beteiligtenartID!=" . $_POST['betart'] . " AND beteiligte.azID!=" . $_SESSION['akte'] . " AND aktenzeichen.id=beteiligte.azID AND adressen.id=beteiligte.adressenID");
 								if (sizeof($aKollision) != 0) {
 										$aParam['_display_'] = 'block';
 										$aParam['_error_']   = 'ACHTUNG !<br>Mögliche Interessenkollision !<br>Details im Aktenprotokoll vermerkt.';
@@ -136,7 +136,7 @@ function Beteiligte()
 										Protokoll($hDatabase, $sDetailInfo);
 								}
 								
-								secure_sqlite_query($hDatabase, "INSERT INTO beteiligte(azID,beteiligtenartID,adressenID,ansprechpartner,telefon,aktenzeichen) VALUES('" . $_SESSION['akte'] . "','" . $_POST['betart'] . "','" . $_POST['zeile'] . "','" . $_POST['ansprechpanam'] . "','" . $_POST['ansprechpatel'] . "','" . $_POST['ansprechpazei'] . "')");
+								SQLQuery($hDatabase, "INSERT INTO beteiligte(azID,beteiligtenartID,adressenID,ansprechpartner,telefon,aktenzeichen) VALUES('" . $_SESSION['akte'] . "','" . $_POST['betart'] . "','" . $_POST['zeile'] . "','" . $_POST['ansprechpanam'] . "','" . $_POST['ansprechpatel'] . "','" . $_POST['ansprechpazei'] . "')");
 						}
 						
 						else {
@@ -153,7 +153,7 @@ function Beteiligte()
 		
 		if (isset($_POST['find'])) {
 				if (($_POST['firma'] != '') || ($_POST['name'] != '') || ($_POST['vorname'])) {
-						$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM adressen WHERE firma LIKE '%" . $_POST['firma'] . "%' AND name LIKE '%" . $_POST['name'] . "%' AND vorname LIKE '%" . $_POST['vorname'] . "%'");
+						$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM adressen WHERE firma LIKE '%" . $_POST['firma'] . "%' AND name LIKE '%" . $_POST['name'] . "%' AND vorname LIKE '%" . $_POST['vorname'] . "%'");
 						if (sizeof($aQuery) != 0) {
 								for ($t = 0; $t < sizeof($aQuery); $t++) {
 										$aAdrid[$t] = $aQuery[$t]['id'];
@@ -177,9 +177,9 @@ function Beteiligte()
 		}
 		
 		
-		$aQuery  = secure_sqlite_array_query($hDatabase, "SELECT * FROM beteiligtenart");
-		$aQuery2 = secure_sqlite_array_query($hDatabase, "SELECT adressen.*,beteiligtenart.arten,beteiligte.* FROM adressen,beteiligte,beteiligtenart WHERE adressen.id=beteiligte.adressenID AND beteiligte.azID='" . $_SESSION['akte'] . "' AND beteiligte.beteiligtenartID=beteiligtenart.id ORDER BY beteiligtenartID");
-		secure_sqlite_close($hDatabase);
+		$aQuery  = SQLArrayQuery($hDatabase, "SELECT * FROM beteiligtenart");
+		$aQuery2 = SQLArrayQuery($hDatabase, "SELECT adressen.*,beteiligtenart.arten,beteiligte.* FROM adressen,beteiligte,beteiligtenart WHERE adressen.id=beteiligte.adressenID AND beteiligte.azID='" . $_SESSION['akte'] . "' AND beteiligte.beteiligtenartID=beteiligtenart.id ORDER BY beteiligtenartID");
+		CloseDB($hDatabase);
 		
 		if (sizeof($aQuery) != 0) {
 				for ($t = 0; $t < sizeof($aQuery); $t++) {

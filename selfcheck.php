@@ -36,12 +36,12 @@ function CheckIntegrity()
 		
 		// Datenbank existiert - geht Zugriff ?
 		
-		$hTestHandle = secure_sqlite_open($sDatabase, $sError);
+		$hTestHandle = OpenDB($sDatabase, $sError);
 		if ($hTestHandle == false) {
 				Error("Fehler bei Datenbankzugriff: " . $sError);
 				die;
 		}
-		secure_sqlite_close($hTestHandle);
+		CloseDB($hTestHandle);
 		
 		IPSperre();
 }

@@ -6,7 +6,7 @@ function LogFile()
 {
 		global $sDatabase;
 		global $sLogpath;
-		$hDatabase           = secure_sqlite_open($sDatabase);
+		$hDatabase           = OpenDB($sDatabase);
 		$aParam['_error_']   = '';
 		$aParam['_display_'] = 'none';
 		
@@ -14,7 +14,7 @@ function LogFile()
 		
 		if (isset($_POST['delete'])) {
 				if ($_POST['zeile'] != '') {
-						secure_sqlite_query($hDatabase, "DELETE FROM logfile WHERE nr='" . (int) $_POST['zeile'] . "'");
+						SQLQuery($hDatabase, "DELETE FROM logfile WHERE nr='" . (int) $_POST['zeile'] . "'");
 				} else {
 						$aParam['_error_']   = "Wählen Sie<br>einen Eintrag aus !";
 						$aParam['_display_'] = 'block';
@@ -24,13 +24,13 @@ function LogFile()
 		// alle löschen ?
 		
 		if (isset($_POST['delall'])) {
-				secure_sqlite_query($hDatabase, "DELETE FROM logfile");
+				SQLQuery($hDatabase, "DELETE FROM logfile");
 		}
 		
 		// Liste exportieren ?
 		
 		if (isset($_POST['export'])) {
-				$aQuery = secure_sqlite_array_query($hDatabase, "SELECT * FROM logfile");
+				$aQuery = SQLArrayQuery($hDatabase, "SELECT * FROM logfile");
 				if (!empty($aQuery)) {
 						$hLogfile = @fopen($sLogpath . date("dMYHis") . ".log", "w+");
 						if ($hLogfile) {
@@ -52,8 +52,8 @@ function LogFile()
 		
 		// liefert ein Array - jeder Array Eintrag ist wieder ein Array/Hashtable mit den Zeileneinträgen
 		
-		$aLogs = secure_sqlite_array_query($hDatabase, "SELECT * FROM logfile");
-		secure_sqlite_close($hDatabase);
+		$aLogs = SQLArrayQuery($hDatabase, "SELECT * FROM logfile");
+		CloseDB($hDatabase);
 		
 		if (!sizeof($aLogs) == 0) {
 				// gibt es haupt  Eintr?

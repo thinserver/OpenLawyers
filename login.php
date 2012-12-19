@@ -21,17 +21,17 @@ function Login($aLogindaten)
 		
 		CheckIPBlock($aLogindaten['benutzername']);
 		
-		$sIPadr    = getenv('REMOTE_ADDR');
-		$hDatabase = secure_sqlite_open($sDatabase);
-		$aErgebnis = secure_sqlite_array_query($hDatabase, "SELECT * FROM users WHERE username='" . $aLogindaten['benutzername'] . "' AND passwort='" . MD5($aLogindaten['passwort']) . "'");
+		$sIPadr = getenv('REMOTE_ADDR');
+		$hDatabase = OpenDB($sDatabase);
+		$aErgebnis = SQLArrayQuery($hDatabase, "SELECT * FROM users WHERE username='" . $aLogindaten['benutzername'] . "' AND passwort='" . MD5($aLogindaten['passwort']) . "'");
 		if (sizeof($aErgebnis) == 0) {
-				secure_sqlite_query($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Login fehlgeschlagen')");
-				secure_sqlite_close($hDatabase);
+				SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Login fehlgeschlagen')");
+				CloseDB($hDatabase);
 				$aParam['_display_'] = 'block';
 				$aParam['_error_']   = 'Zugriff verweigert !';
 				ShowGui('login.html', $aParam);
 		}
-		secure_sqlite_query($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Eingeloggt')");
+		SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Eingeloggt')");
 		
 		if ($aLogindaten['benutzername'] == "Administrator") {
 				$_SESSION['ipadresse'] = ip2long(getenv('REMOTE_ADDR'));
@@ -39,7 +39,7 @@ function Login($aLogindaten)
 				$_SESSION['time']      = date('U');
 				$_SESSION['panel']     = 'adminpanel.html';
 				$_SESSION['guipath']   = $sAdmingui;
-				secure_sqlite_close($hDatabase);
+				CloseDB($hDatabase);
 				ShowGui('adminpanel.html', null);
 		}
 		
@@ -49,7 +49,7 @@ function Login($aLogindaten)
 		$_SESSION['panel']     = 'userpanel.html';
 		$_SESSION['userID']    = $aErgebnis[0]['id'];
 		$_SESSION['guipath']   = $sUsergui;
-		secure_sqlite_close($hDatabase);
+		CloseDB($hDatabase);
 		ShowGui('userpanel.html', null);
 		die;
 }
@@ -71,9 +71,9 @@ function Logout()
 				}
 		}
 		
-		$hDatabase = secure_sqlite_open($sDatabase);
-		secure_sqlite_query($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . $_SESSION['ipadresse'] . "','" . date("U") . "','" . $_SESSION['benutzer'] . "','Ausgeloggt')");
-		secure_sqlite_close($hDatabase);
+		$hDatabase = OpenDB($sDatabase);
+		SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . $_SESSION['ipadresse'] . "','" . date("U") . "','" . $_SESSION['benutzer'] . "','Ausgeloggt')");
+		CloseDB($hDatabase);
 		unset($_SESSION);
 		session_destroy();
 		$aParam['_display_'] = 'none';
