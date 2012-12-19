@@ -7,8 +7,8 @@ function Login($aLogindaten)
 		global $sDatabase;
 		global $sUsergui;
 		global $sAdmingui;
-		
-		if ((!isset($aLogindaten['benutzername'])) || (!isset($aLogindaten['passwort']))) {
+
+/*		if ((!isset($aLogindaten['benutzername'])) || (!isset($aLogindaten['passwort']))) {
 				$aParam['_display_'] = 'block';
 				$aParam['_error_']   = 'Name und Passwort<br>eingeben !';
 				ShowGui('login.html', $aParam);
@@ -17,20 +17,48 @@ function Login($aLogindaten)
 				$aParam['_display_'] = 'block';
 				$aParam['_error_']   = 'Name und Passwort<br>eingeben !';
 				ShowGui('login.html', $aParam);
-		}
+		}*/
 		
-		CheckIPBlock($aLogindaten['benutzername']);
+//		CheckIPBlock($aLogindaten['benutzername']);
 		
 		$sIPadr = getenv('REMOTE_ADDR');
 		$hDatabase = OpenDB($sDatabase);
-		$aErgebnis = SQLArrayQuery($hDatabase, "SELECT * FROM users WHERE username='" . $aLogindaten['benutzername'] . "' AND passwort='" . MD5($aLogindaten['passwort']) . "'");
-		if (sizeof($aErgebnis) == 0) {
-				SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Login fehlgeschlagen')");
-				CloseDB($hDatabase);
-				$aParam['_display_'] = 'block';
-				$aParam['_error_']   = 'Zugriff verweigert !';
-				ShowGui('login.html', $aParam);
+	
+		// parse SSL client certificate attributes
+		$userCert = $_SERVER['SSL_CLIENT_CERT'];
+		$values = [];
+		foreach (explode('/', $_SERVER['SSL_CLIENT_S_DN']) as $definition) {
+			$e = explode('=', $definition);
+			if ($e[0] != '')
+				$values[ $e[0] ] = $e[1];
+			}
+
+		// somebody tries to login by certificate
+		if ($userCert != '' and array_key_exists('CN', $values)) {
+			$friendlyName = $values['CN'];
+
+			$query = "SELECT * FROM users WHERE username='".$friendlyName."';"; # AND (NOT sslcert=NULL)
+//			echo $query;
+			$aErgebnis = SQLArrayQuery($hDatabase, $query);
+//			echo sizeof($result);
+			$dbCert = '';
+			if (sizeof($aErgebnis) > 0)
+				$dbCert = $aErgebnis[1];
+
+			$loginSuccess = (trim($userCert) == trim($dbCert));
+		} else {
+			// password-based login
+			$aErgebnis = SQLArrayQuery($hDatabase, "SELECT * FROM users WHERE username='" . $aLogindaten['benutzername'] . "' AND passwort='" . MD5($aLogindaten['passwort']) . "'");
+			$loginSuccess = (sizeof($aErgebnis) != 0);
+			if (! $loginSuccess) {
+					SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Login fehlgeschlagen')");
+					CloseDB($hDatabase);
+					$aParam['_display_'] = 'block';
+					$aParam['_error_']   = 'Zugriff verweigert !';
+					ShowGui('login.html', $aParam);
+			}
 		}
+		
 		SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Eingeloggt')");
 		
 		if ($aLogindaten['benutzername'] == "Administrator") {

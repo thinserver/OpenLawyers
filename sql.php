@@ -26,16 +26,16 @@ function OpenDB($sDatabasefilename, &$error = null)
 			}
 		} else {
 			global $sMySQL;
-			$link = mysql_connect($sMySQL[0], $sMySQL[2], $sMySQL[3]);
-			if (!link) {
+			$link = mysql_connect('localhost', 'kanzleiserver', 'kanzlei');
+			if (!$link) {
 					Error('MySQL-Verbindung schlug fehl: ' . mysql_error());
 					}
-			$iHandle = mysql_select_db($sMySQL[1], $link);
+			$iHandle = mysql_select_db('OpenLawyers', $link);
 			if (!$iHandle) {
 					Error ('Kann die MySQL-Datenbank '.$db.' nicht benutzen : ' . mysql_error());
 					}
 			}
-		return ($iHandle);
+		return ($link);
 }
 
 function SQLQuery($hHandle, $sFunktion, &$error = null)
@@ -55,16 +55,9 @@ function SQLQuery($hHandle, $sFunktion, &$error = null)
 			}
 		} else {
 			// Führe Abfrage aus
-			$aErgebnis = mysql_query($query, $link);
-
-			// Prüfe Ergebnis
-			// Dies zeigt die tatsächliche Abfrage, die an MySQL gesandt wurde und den
-			// Fehler. Nützlich bei der Fehlersuche
-			if (!$aErgebnis) {
-					$message  = 'Ungültige Abfrage: ' . mysql_error() . "\n";
-					$message .= 'Gesamte Abfrage: ' . $query;
-					Error($message);
-					}
+			$result = mysql_query($sFunktion, $hHandle);
+			$aErgebnis = mysql_fetch_array($result, MYSQL_BOTH);
+			mysql_free_result($result);
 			}
 		return ($aErgebnis);
 }
