@@ -7,33 +7,33 @@ function CheckIntegrity()
 		global $sGuipath;
 		global $sDatabase;
 		
-		// PHP5 
+/*		// PHP5 
 		
 		$sVersion = phpversion();
 		if ((int) $sVersion[0] < 5) {
-				Error("Fehler: OpenLawyer\'s benötigt mindestens PHP5 !");
+				Error("Fehler: OpenLawyer\'s benötigt PHP5 !");
 				die;
 		}
 		
 		// SQlite2
-/*		if (phpversion('sqlite') == '') {
+		if (phpversion('sqlite') == '') {
 				Error("Fehler: PHP-Bibliothek für SQLite fehlt !");
 				die;
 		}
-*/		
+		
 		// Ohne Oberfläche läuft nichts
 		
 		if (!file_exists($sGuipath)) {
 				Error("Fehler: Oberflächendateien (GUI) nicht verfügbar.");
 				die;
 		}
-
-		// Existiert überhaupt eine Datenbank ? Wenn nicht, wohl erster Start
+*/
+		// Existiert überhaupt eine Datenbank ?
 		
-		if (!file_exists($sDatabase)) {
-				InitDB();
+/*		if (!file_exists($sDatabase)) {
+				Initialize();
 		}
-		
+*/		
 		// Datenbank existiert - geht Zugriff ?
 		
 		$hTestHandle = OpenDB($sDatabase, $sError);

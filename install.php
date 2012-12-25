@@ -3,7 +3,7 @@
 // ehemals init.php - Erzeugen einer Datenbank bei erstmaligem Aufruf oder bei Pool
 // "UpdateSpeedFix" - Anlage von Indizes - integriert
 
-function InitDB()
+function Initialize()
 {
 		// Bei Erweiterung um Poolfähigkeit müssen diese überschrieben werden
 		
@@ -30,9 +30,9 @@ function InitDB()
 				"Verzeichnis " . $sTmp . " für temporäre Dateien anlegen"
 		);
 		$aStatusMeldung    = array(
-				"Fehlgeschlagen",
-				"Erfolgreich",
-				"Achtung: Existiert bereits !"
+				"Fehler",
+				"OK",
+				"Existiert bereits "
 		);
 		
 		$aParam['_status_']  = '';
@@ -43,7 +43,27 @@ function InitDB()
 		
 		$bErrStatus = false;
 		
-		// ----------------------------- Datenbankstruktur. Nicht Ändern ! ---------------------------------------------------
+	
+		// ------------------------------- Initialisierungsroutinen -----------------------------------------------------------
+		
+		// Notwendige Verzeichnisse anlegen
+		
+		for ($t = 0; $t < sizeof($aVerzeichnisse); $t++) {
+				$aStatus[$t]   = $aStatusMeldung[2];
+				$aAktionen[$t] = $aAktionsMeldungen[$t];
+				if (!file_exists($aVerzeichnisse[$t])) {
+						$bError = @mkdir($aVerzeichnisse[$t], 0777);
+						if ($bError == false) {
+								$bErrStatus = true;
+						}
+						$aStatus[$t] = $aStatusMeldung[$bError];
+				} else {
+						$bErrStatus = true;
+				}
+		}
+		
+		// Datenbank anlegen
+		// ----------------------------- Datenbankstruktur ---------------------------------------------------
 		
 		$aTables = array(
 				"CREATE TABLE users(id INTEGER PRIMARY KEY, username VARCHAR(20) NOT NULL, passwort VARCHAR(32) NOT NULL)",
@@ -125,8 +145,7 @@ function InitDB()
 				"CREATE INDEX IDX_wvtypen_01 ON wvtypen (id)"
 		);
 		
-		// ------------------------------- Basisdaten / Nur mit Bedacht verändern ! -------------------------------------------
-		
+		// ------------------------------- Basisdaten -------------------------------------------
 		$aDBBasis = array(
 				"INSERT INTO users (username,passwort) VALUES ('Administrator','" . MD5('sysop') . "')",
 				"INSERT INTO security (ipadresse) VALUES (" . ip2long('127.0.0.1') . ")",
@@ -167,27 +186,8 @@ function InitDB()
 				"INSERT INTO rechtsgebiete (bezeichnung) VALUES ('Gewerblicher Rechtsschutz')"
 		);
 		
-		// ------------------------------- Initialisierungsroutinen -----------------------------------------------------------
-		
-		// Notwendige Verzeichnisse anlegen
-		
-		for ($t = 0; $t < sizeof($aVerzeichnisse); $t++) {
-				$aStatus[$t]   = $aStatusMeldung[2];
-				$aAktionen[$t] = $aAktionsMeldungen[$t];
-				if (!file_exists($aVerzeichnisse[$t])) {
-						$bError = @mkdir($aVerzeichnisse[$t], 0777);
-						if ($bError == false) {
-								$bErrStatus = true;
-						}
-						$aStatus[$t] = $aStatusMeldung[$bError];
-				} else {
-						$bErrStatus = true;
-				}
-		}
-		
-		// Datenbank anlegen
-		
-		$aAktionen[] = "Datenbankdatei " . $sDatabase . " erzeugen";
+		$aAktionen[] = "Datenbank erzeugen";
+		#$aAktionen[] = "Datenbankdatei " . $sDatabase . " erzeugen";
 		
 		$hDatabase = OpenDB($sDatabase, $sError);
 		
@@ -275,8 +275,8 @@ function InitDB()
 		$aParam['_aktion_'] = $aAktionen;
 		
 		if ($bErrStatus == true) {
-				$aParam['_error2_']  = 'Es sind Fehler aufgetreten ! Beseitigen Sie die Ursachen und führen Sie die Initialisierung erneut durch.';
-				$aParam['_error_']   = 'Fehlgeschlagen !';
+				$aParam['_error2_']  = 'Es sind Fehler aufgetreten. Bitte beseitigen sie deren Ursachen und f&uuml;hren Sie die Initialisierung erneut durch.';
+				$aParam['_error_']   = 'Installation fehlgeschlagen';
 				$aParam['_display_'] = 'block';
 		}
 		
