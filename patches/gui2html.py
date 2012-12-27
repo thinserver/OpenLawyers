@@ -21,4 +21,6 @@ for e in ["*.gui", "*.html", "*.php"]:
 			cmd = 'git mv "'+file+'" "'+new+'"'
 			print cmd
 			Popen(split(cmd)).wait()
+			cmd = 'mv "'+file+'" "'+new+'"'
+			Popen(split(cmd)).wait()
 

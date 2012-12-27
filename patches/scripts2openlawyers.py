@@ -3,6 +3,8 @@
 from subprocess import Popen, PIPE
 from shlex import split
 
+Popen(split('mv scripts.js openlawyers.js')).wait()
+
 files = Popen(split('find . -name "*.html"'), stdout=PIPE).communicate()[0].strip().split('\n')
 
 for file in files:
