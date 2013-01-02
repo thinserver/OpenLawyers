@@ -8,7 +8,7 @@ function Login($aLogindaten)
 		global $sUsergui;
 		global $sAdmingui;
 
-/*		if ((!isset($aLogindaten['benutzername'])) || (!isset($aLogindaten['passwort']))) {
+		if ((!isset($aLogindaten['benutzername'])) || (!isset($aLogindaten['passwort']))) {
 				$aParam['_display_'] = 'block';
 				$aParam['_error_']   = 'Name und Passwort<br>eingeben !';
 				ShowGui('login.html', $aParam);
@@ -17,13 +17,13 @@ function Login($aLogindaten)
 				$aParam['_display_'] = 'block';
 				$aParam['_error_']   = 'Name und Passwort<br>eingeben !';
 				ShowGui('login.html', $aParam);
-		}*/
+		}
 		
 //		CheckIPBlock($aLogindaten['benutzername']);
 		
 		$sIPadr = getenv('REMOTE_ADDR');
 		$hDatabase = OpenDB($sDatabase);
-	
+/*	
 		// parse SSL client certificate attributes
 		$userCert = $_SERVER['SSL_CLIENT_CERT'];
 		$values = [];
@@ -46,7 +46,7 @@ function Login($aLogindaten)
 				$dbCert = $aErgebnis[1];
 
 			$loginSuccess = (trim($userCert) == trim($dbCert));
-		} else {
+		} else { */
 			// password-based login
 			$aErgebnis = SQLArrayQuery($hDatabase, "SELECT * FROM users WHERE username='" . $aLogindaten['benutzername'] . "' AND passwort='" . MD5($aLogindaten['passwort']) . "'");
 			$loginSuccess = (sizeof($aErgebnis) != 0);
@@ -57,7 +57,7 @@ function Login($aLogindaten)
 					$aParam['_error_']   = 'Zugriff verweigert !';
 					ShowGui('login.html', $aParam);
 			}
-		}
+		//}
 		
 		SQLQuery($hDatabase, "INSERT INTO logfile (ipadresse,zeit,benutzer,ereignis) VALUES ('" . ip2long($sIPadr) . "','" . date("U") . "','" . $aLogindaten['benutzername'] . "','Eingeloggt')");
 		
